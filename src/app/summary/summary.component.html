@@ -1,0 +1,98 @@
+<app-header></app-header>
+<app-navbar></app-navbar>
+
+
+<div class="content">
+
+
+    <div class="summary-container">
+        <div class="summary-header">
+            <div class="summary-titel">
+                <h1>Join 360</h1>
+            </div>
+            <div class="summary-border-mid"></div>
+            <div class="summary-header-text">
+                <p>Key Metrics at a Glance</p>
+            </div>
+            <div class="summary-border-bottom"></div>
+        </div>
+        <div class="summary-body">
+            <div class="summary-overview">
+                <div class="overview-top">
+                    <div class="overview-top-card" (click)="linkToBoard()" (mouseover)="changeImg('pencil')"
+                        (mouseout)="resetImg('pencil')">
+                        <div class="top-icon">
+                            <img [src]="penImgSrc[penImgIdx]" id="pencil" alt="Pencil" />
+                        </div>
+                        <div class="top-content">
+                            <div class="task-number" id="toDo">{{nrOfTasks[0].amount}}</div>
+                            <div class="subtitel">To-do</div>
+                        </div>
+                    </div>
+                    <div class="overview-top-card" (click)="linkToBoard()" (mouseover)="changeImg('done')"
+                        (mouseout)="resetImg('done')">
+                        <div class="top-icon">
+                            <img [src]="doneImgSrc[doneImgIdx]" id="done" alt="Done" />
+                        </div>
+                        <div class="top-content">
+                            <div class="task-number" id="done1">{{nrOfTasks[3].amount}}</div>
+                            <div class="subtitel">Done</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-mid">
+                    <div (click)="linkToBoard()" class="overview-mid-card">
+                        <div class="mid-card-left">
+                            <div class="mid-icon">
+                                <img src="../../assets/img/urgents.svg" alt="Urgent" />
+                            </div>
+                            <div class="top-content">
+                                <div class="task-number" id="urgent">{{taskHighestPriorityArray.length}}</div>
+                                <div class="subtitel">Urgent</div>
+                            </div>
+                        </div>
+                        <div class="mid-card-mid"></div>
+                        <div class="mid-card-right">
+                            <div class="card-right-date" id="actuell-date">
+                                {{deadline}}
+                            </div>
+                            <div class="subtitel">Upcoming Deadline</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-bottom">
+                    <div (click)="linkToBoard()" class="overview-bottom-card">
+                        <div class="top-content">
+                            <div class="task-number" id="inBoard">{{nrTasksInBoard}}</div>
+                            <div class="subtitel">Tasks in Board</div>
+                        </div>
+                    </div>
+                    <div (click)="linkToBoard()" class="overview-bottom-card">
+                        <div class="top-content">
+                            <div class="task-number" id="inProgress">{{nrOfTasks[1].amount}}</div>
+                            <div class="subtitel">Tasks in Progress</div>
+                        </div>
+                    </div>
+                    <div (click)="linkToBoard()" class="overview-bottom-card">
+                        <div class="top-content">
+                            <div class="task-number" id="feedback">{{nrOfTasks[2].amount}}</div>
+                            <div class="subtitel">Awaiting Feedback</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="summary-greet" id="summaryGreet">
+                <div class="greet-body" id="greeting">
+                    <p>{{greeting}}</p>
+                    @if (name != 'guest') {
+                    <h2>{{name}}</h2>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@if (mobileMode) {<app-greeting-animation [animationState]="sessionDataService.fadeout" [greeting]="greeting"
+    [name]="name"></app-greeting-animation>}

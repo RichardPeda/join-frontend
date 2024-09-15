@@ -1,0 +1,161 @@
+<app-header></app-header>
+<app-navbar></app-navbar>
+
+<div class="content">
+
+    <div id="board-content-container">
+        <div class="board-headline-menu">
+            <div class="board-headline">
+                <h1>Board</h1>
+                <div (click)="linkToAddTask('toDo')" class="board-addTask-control control-mobile">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8.66602 11.3327H0.666016V8.66602H8.66602V0.666016H11.3327V8.66602H19.3327V11.3327H11.3327V19.3327H8.66602V11.3327Z"
+                            fill="white" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="board-controller">
+                <div class="board-search">
+                    <input id="board-search" [(ngModel)]="searchInput" (ngModelChange)="filterTask()" type="text"
+                        placeholder="Find Task" />
+                    <div class="board-search-btn-frame">
+                        <div class="board-round-btn-frame">
+                            <img class="addTask-arrow-btn" src="../../../assets/img/search.svg" alt="" />
+                        </div>
+                    </div>
+                </div>
+                <button (click)="openAddTaskDialog('toDo')" class="board-btn-addTask">
+                    Add Task
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8.66602 11.3327H0.666016V8.66602H8.66602V0.666016H11.3327V8.66602H19.3327V11.3327H11.3327V19.3327H8.66602V11.3327Z"
+                            fill="white" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="board-column" class="board-column-container" cdkDropListGroup>
+
+            <!-- TODO -->
+            <div id="column-todo" class="board-column">
+                <div class="board-column-header">
+                    <p class="board-colum-headline">Todo</p>
+                    <div (click)="openAddTaskDialog('toDo')" class="board-addTask-control">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M8.66602 11.3327H0.666016V8.66602H8.66602V0.666016H11.3327V8.66602H19.3327V11.3327H11.3327V19.3327H8.66602V11.3327Z"
+                                fill="#2A3647" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div id="todo-card-container" class="card-container" cdkDropList [cdkDropListData]="todo"
+                    (cdkDropListDropped)="drop($event)" (cdkDropListEntered)="resetGhostCard($event)"
+                    (cdkDropListExited)="setGhostCard($event)">
+
+                    @for (task of localUser.tasks; track task; let index = $index) {
+
+                    @if (task.status === 'toDo') {<app-board-card class="card-box" (setTask)="updateTaskStatus()"
+                        (cdkDragStarted)="drag($event,task)" [cdkDragDisabled]="mobileMode" appClickTarget
+                        (click)="openDetailDialog($event,index)" [task]="task" cdkDrag
+                        [ngClass]="{'low-opacity': filterActive && !filteredTasks.includes(task.taskID)}"></app-board-card>}
+
+                    }
+
+                    <div [ngClass]="{'d-none': amountTasksTodo > 0 || hideLabel[0]}" class="board-column-noTask">No
+                        Tasks To Do
+                    </div>
+                    <div [ngClass]="{'min-margin': amountTasksTodo == 0, 'd-none' : hideGhostCard[0]}"
+                        class="board-ghostCard "></div>
+
+                </div>
+            </div>
+            <!-- inProgress -->
+            <div id="column-inProgress" class="board-column">
+                <div class="board-column-header">
+                    <p class="board-colum-headline">In progress</p>
+                    <div (click)="openAddTaskDialog('inProgress')" class="board-addTask-control">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M8.66602 11.3327H0.666016V8.66602H8.66602V0.666016H11.3327V8.66602H19.3327V11.3327H11.3327V19.3327H8.66602V11.3327Z"
+                                fill="#2A3647" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div id="inProgress-card-container" class="card-container" cdkDropList [cdkDropListData]="inProgress"
+                    (cdkDropListDropped)="drop($event)" (cdkDropListEntered)="resetGhostCard($event)"
+                    (cdkDropListExited)="setGhostCard($event)">
+                    @for (task of localUser.tasks; track task; let index = $index) {
+
+                    @if (task.status === 'inProgress') {<app-board-card class="card-box" (setTask)="updateTaskStatus()"
+                        (click)="openDetailDialog($event,index)" [task]="task" (cdkDragStarted)="drag($event,task)"
+                        [cdkDragDisabled]="mobileMode" cdkDrag
+                        [ngClass]="{'low-opacity': filterActive && !filteredTasks.includes(task.taskID)}"></app-board-card>}
+
+                    }
+                    <div [ngClass]="{'d-none': amountTasksInProgress > 0 || hideLabel[1]}" class="board-column-noTask">
+                        No Tasks in
+                        Progress</div>
+                    <div [ngClass]="{'min-margin': amountTasksInProgress == 0, 'd-none' : hideGhostCard[1]}"
+                        class="board-ghostCard"></div>
+                </div>
+            </div>
+            <!-- await Feedback -->
+            <div id="column-awaitFeedback" class="board-column">
+                <div class="board-column-header">
+                    <p class="board-colum-headline">Await feedback</p>
+                    <div (click)="openAddTaskDialog('awaitFeedback')" class="board-addTask-control">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M8.66602 11.3327H0.666016V8.66602H8.66602V0.666016H11.3327V8.66602H19.3327V11.3327H11.3327V19.3327H8.66602V11.3327Z"
+                                fill="#2A3647" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div id="awaitFeedback-card-container" class="card-container" cdkDropList
+                    [cdkDropListData]="awaitFeedback" (cdkDropListDropped)="drop($event)"
+                    (cdkDropListEntered)="resetGhostCard($event)" (cdkDropListExited)="setGhostCard($event)">
+                    @for (task of localUser.tasks; track task; let index = $index) {
+                    @if (task.status === 'awaitFeedback') {<app-board-card class="card-box" (setTask)="updateTaskStatus()"
+                        (click)="openDetailDialog($event, index)" [task]="task" (cdkDragStarted)="drag($event,task)"
+                        [cdkDragDisabled]="mobileMode" cdkDrag
+                        [ngClass]="{'low-opacity': filterActive && !filteredTasks.includes(task.taskID)}"></app-board-card>}
+                    }
+                    <div [ngClass]="{'d-none': amountTasksAwaitFeedback > 0|| hideLabel[2]}"
+                        class="board-column-noTask">No Tasks
+                        await Feedback</div>
+                    <div [ngClass]="{'min-margin': amountTasksAwaitFeedback == 0, 'd-none' : hideGhostCard[2]}"
+                        class="board-ghostCard"></div>
+                </div>
+            </div>
+            <!-- done -->
+            <div id="column-done" class="board-column">
+                <div class="board-column-header">
+                    <p class="board-colum-headline">Done</p>
+                </div>
+
+                <div id="done-card-container" class="card-container" cdkDropList [cdkDropListData]="done"
+                    (cdkDropListDropped)="drop($event)" (cdkDropListEntered)="resetGhostCard($event)"
+                    (cdkDropListExited)="setGhostCard($event)">
+                    @for (task of localUser.tasks; track task; let index = $index) {
+                    @if (task.status === 'done') {<app-board-card class="card-box" (setTask)="updateTaskStatus()"
+                        (click)="openDetailDialog($event,index)" [task]="task" (cdkDragStarted)="drag($event,task)"
+                        [cdkDragDisabled]="mobileMode" cdkDrag
+                        [ngClass]="{'low-opacity': filterActive && !filteredTasks.includes(task.taskID)}"></app-board-card>}
+                    }
+                    <div [ngClass]="{'d-none': amountTasksDone > 0|| hideLabel[3]}" class="board-column-noTask">No Tasks
+                        done</div>
+                    <div [ngClass]="{'min-margin': amountTasksDone == 0, 'd-none' : hideGhostCard[3]}"
+                        class="board-ghostCard"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

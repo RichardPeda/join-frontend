@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "join-3a828": {
+      "hosting": {
+        "join": [
+          "join-3a828"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "join-3a828"
+  }
+}

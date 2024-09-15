@@ -1,0 +1,87 @@
+<div class="site">
+
+    <div class="logIn-logo" id="logInLogo">
+        <img src="../../assets/img/Capa 1.svg" alt="Join-Logo" />
+    </div>
+
+    <div class="notUser">
+        <p>Not a Join user?</p>
+        <button (click)="linkToSignUp()" id="loadSignUp">Sign up</button>
+    </div>
+
+
+    <form (ngSubmit)="onSubmit()" class="logIn" [formGroup]="userform">
+        <div class="logInHeader">
+            <h1>
+                Log in
+                <div class="border-bottom"></div>
+            </h1>
+        </div>
+        <div class="input-layout">
+            <div class="input-field">
+                <input autocomplete="email" placeholder="Email" formControlName="email" required="true" />
+                <div class="icon">
+                    <img src="../../assets/img/mail.svg" alt="E-Mail" />
+                </div>
+
+            </div>
+
+
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': userform.controls['email'].invalid && userform.controls['email'].touched}"
+                id="errorMessage">
+                <p>No valid password</p>
+            </div>
+
+
+            <div class="loginPassword">
+                <div class="input-field" id="pwField">
+                    <input autocomplete="current-password" type="password" placeholder="Password"
+                        formControlName="password" />
+                    <div class="icon">
+                        <img id="logInpwIcon" src="../../assets/img/lock.svg" alt="Lock" />
+                    </div>
+                </div>
+
+                <div class="login-error"
+                    [ngClass]="{'full-opacity': userform.controls['password'].invalid && userform.controls['password'].touched}"
+                    id="errorMessage">
+                    <p>Wrong or invalid password Ups! Try again.</p>
+                </div>
+
+
+            </div>
+
+            <mat-checkbox class="input-checkbox" (change)="updateCheckbox($event.checked)" [checked]="checkbox"
+                [color]="'primary'"> Remember me</mat-checkbox>
+
+
+
+
+        </div>
+        <div class="logIn-btns">
+            <input class="logIn-btn" type="submit" [disabled]="!userform.valid" value="Log in" />
+            <button (click)="addNewGuestUser()" type="button" class="logIn-btn-guest">
+                Guest Log in
+            </button>
+        </div>
+    </form>
+
+   
+    <div class="link-container">
+        <a (click)="linkToPrivacyPolicy()"> Privacy policy</a>
+        <a (click)="linkToLegalNotice()"> Legal Notice</a>
+    </div>
+
+    <app-logo-animation [ngClass]="{disabled: mobileMode}"></app-logo-animation>
+    <app-logo-animation-mobile [ngClass]="{disabled: !mobileMode}"></app-logo-animation-mobile>
+
+
+</div>
+
+
+
+@if (showNotification) {
+<app-popup-notification [label]="notificationText"></app-popup-notification>
+}

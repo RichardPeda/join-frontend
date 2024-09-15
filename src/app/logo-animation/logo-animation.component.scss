@@ -1,0 +1,41 @@
+@import '../../colors.scss';
+
+.logoAnimation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: $clr-background-bottom;
+    transition: all 1s;
+}
+
+.d-none{
+    display: none;
+   
+}
+
+.animation-body {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 334.07px;
+    width: 274px;
+}
+
+.animation-body img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+   
+}
+
+button{
+    position: absolute;
+}

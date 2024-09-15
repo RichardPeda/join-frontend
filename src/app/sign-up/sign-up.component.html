@@ -1,0 +1,96 @@
+<div class="site">
+    <div class="signUp-logo">
+        <img src="../../assets/img/Capa 1.svg" alt="Join-Logo" />
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="signUp" [formGroup]="newUserForm">
+        <div class="signUpHeader">
+            <div [routerLink]="['']" class="closeSignUp">
+                <img src="../../assets/img/Vector.svg" alt="Back" />
+            </div>
+            <h1>
+                Sign up
+                <div class="border-bottom"></div>
+            </h1>
+        </div>
+        <div class="input-layout">
+            <div class="input-field">
+                <input formControlName="name" type="text" id="name" placeholder="Name" autocomplete="name" />
+                <div class="icon">
+                    <img src="../../assets/img/person-grey.svg" alt="Person" />
+                </div>
+            </div>
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': newUserForm.controls['name'].invalid && newUserForm.controls['name'].touched}">
+                <p>This field is required</p>
+            </div>
+
+
+            <div class="confirmPassword">
+                <div class="input-field" id="emailField">
+                    <input formControlName="email" type="email" id="email" placeholder="Email" autocomplete="email" />
+                    <div class="icon">
+                        <img src="../../assets/img/mail.svg" alt="E-Mail" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': newUserForm.controls['email'].invalid && newUserForm.controls['email'].touched}">
+                <p>This field is required and must be an valid email address</p>
+            </div>
+
+            <div class="input-field">
+                <input formControlName="password_1" type="password" id="password" placeholder="Password" autocomplete="new-password"/>
+                <div class="icon">
+                    <img id="pwIcon" src="../../assets/img/lock.svg" alt="Lock" />
+                </div>
+            </div>
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': newUserForm.controls['password_1'].invalid && newUserForm.controls['password_1'].touched}">
+                <p>The password is required and must contain 5 characters</p>
+            </div>
+
+
+            <div class="confirmPassword">
+                <div class="input-field" id="cpwField">
+                    <input formControlName="password_2" type="password" id="confirmPassword"
+                        placeholder="Confirm Password" autocomplete="new-password" />
+                    <div class="icon">
+                        <img id="cpwIcon" src="../../assets/img/lock.svg" alt="Lock" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': newUserForm.controls['password_2'].invalid && newUserForm.controls['password_2'].touched}">
+                <p>The password is required and must contain 5 characters</p>
+            </div>
+
+            <div class="login-error"
+                [ngClass]="{'full-opacity': newUserForm.errors?.['passwordMatch'] && newUserForm.controls['password_1'].dirty && newUserForm.controls['password_2'].dirty}">
+                <p>Passwords don´t match</p>
+            </div>
+
+            <mat-checkbox [ngModelOptions]="{standalone: true}" class="input-checkbox" [(ngModel)]="checkbox"
+                [color]="'primary'">I accept the <a (click)="linkToPrivacyPolicy()"> Privacy policy</a></mat-checkbox>
+
+
+            <div class="signUp-error-pw confirmBox zero-opacity" id="errorMessageBox">
+                <p>Please accept the privacy policy</p>
+            </div>
+        </div>
+        <input [ngClass]="{'form-validate' :  newUserForm.valid && checkbox}" class="signUp-btn" type="submit"
+            [disabled]="newUserForm.invalid || !checkbox" value="Sign up" />
+    </form>
+
+    <div class="link-container">
+        <a (click)="linkToPrivacyPolicy()"> Privacy policy</a>
+        <a (click)="linkToLegalNotice()"> Legal Notice</a>
+    </div>
+</div>
+@if (showNotification) {
+<app-popup-notification [label]="notificationText"></app-popup-notification>
+}

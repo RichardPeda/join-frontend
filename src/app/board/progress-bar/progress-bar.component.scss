@@ -1,0 +1,32 @@
+
+
+
+.board-task-progress {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 11px;
+    margin-block: 24px;
+}
+
+
+
+.board-task-progress p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.board-task-progress-inner {
+    width: 50%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: #4589ff;
+}
+
+.board-task-progressbar {
+    flex: 1;
+    background-color: #f4f4f4;
+    height: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+}

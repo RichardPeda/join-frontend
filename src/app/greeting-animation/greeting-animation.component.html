@@ -1,0 +1,8 @@
+<div [@show-fadeout]="animationState" class="summary-greet" id="summaryGreet">
+    <div class="greet-body" id="greeting">
+        <p>{{greeting}}</p>
+        @if (name != 'guest') {
+        <h2>{{name}}</h2>
+        }
+    </div>
+</div>

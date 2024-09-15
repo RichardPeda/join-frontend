@@ -1,0 +1,100 @@
+@import '../../../../colors.scss';
+
+.addTask-subtask-container {
+    width: 100%;
+    min-height: 50px;
+    padding-bottom: 12px;
+}
+
+.addTask-subtask-element {
+    list-style: circle;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 100%;
+    padding: 6px 16px 4px 32px;
+    // padding: 8px;
+    border-radius: 10px;
+    position: relative;
+    // padding-left: 32px;
+    cursor: pointer;
+   
+}
+
+.addTask-subtask-element:hover:not(.subtask-element-selected) {
+    background-color: $clr-light-gray;
+}
+
+.subtask-element-selected {
+    border-bottom: 1px solid $clr-light-blue;
+    border-radius: 0;
+    background-color: white;
+}
+
+.addTask-subtask-listElement {
+    flex: 1;
+    border: none;
+    width: 80%;
+    background-color: transparent;
+    font-size: 16px;
+    position: relative;
+    cursor: pointer;
+}
+
+.dot-before::before {
+    content: '\A   ';
+    width: 5px;
+    height: 5px;
+    position: absolute;
+    left: 16px;
+    border-radius: 50%;
+    background: $clr-dark-gray;
+    display: inline-block;
+}
+
+.dot-before:has(> input:read-write)::before {
+    content: none !important;
+    background-color: white;
+}
+
+.dot-before:has(> input:read-write) {
+
+    background-color: white;
+    border-bottom: 1px solid $clr-light-blue;
+    border-radius: unset;
+}
+
+// .dot-before:has(> input:read-write):hover {
+//     pointer-events: none !important;
+// }
+
+input:read-write {
+    background-color: white;
+}
+
+.addTask-subtask-element.no-before::before {
+    content: none;
+}
+
+.addTask-subtask-listElement:focus {
+    outline: none;
+}
+
+.subtask-icon {
+    cursor: pointer;
+}
+
+.subtask-icon svg {
+    height: 18px;
+    width: 18px;
+}
+
+.subtask-delete,
+.subtask-accept {
+    margin-left: 8px;
+    z-index: 50;
+}
+
+.d-none {
+    display: none;
+}

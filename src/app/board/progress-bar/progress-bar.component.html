@@ -1,0 +1,11 @@
+
+<div class="board-task-progress">
+    @if (totalSubtasks > 0) {
+        <div class="board-task-progressbar">
+            <div class="board-task-progress-inner" [ngStyle]="{'width': progress + '%'}">
+            </div>
+        </div>
+        <p>{{finishedSubtasks}}/{{totalSubtasks}} Subtasks</p>
+    }
+   
+</div>

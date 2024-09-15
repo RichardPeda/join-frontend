@@ -1,0 +1,168 @@
+@import '../../../colors.scss';
+
+
+
+.details-container {
+    margin-left: 55px;
+    margin-top: 39px;
+
+    @media(max-width: 950px) {
+        margin-left: 0;
+    }
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+
+    h2 {
+        margin-block: 0;
+    }
+}
+
+
+.person-details-badge {
+    width: 120px;
+    height: 120px;
+    padding: 30px;
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 72px;
+    color: white;
+    font-size: 47px;
+    font-weight: 500;
+}
+
+.person-details-badge {
+    font-size: 27px;
+    font-weight: 400;
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+
+#edit-btn img {
+    filter: invert(21%) sepia(15%) saturate(1620%) hue-rotate(176deg) brightness(95%) contrast(91%);
+    width: 18px;
+    height: 18px;
+}
+
+#delete-btn img {
+    filter: invert(21%) sepia(15%) saturate(1620%) hue-rotate(176deg) brightness(95%) contrast(91%);
+    width: 16px;
+    height: 18px;
+}
+
+#edit-btn:hover img {
+    filter: invert(59%) sepia(91%) saturate(1353%) hue-rotate(166deg) brightness(90%) contrast(95%);
+}
+
+#delete-btn:hover img {
+    filter: invert(59%) sepia(91%) saturate(1353%) hue-rotate(166deg) brightness(90%) contrast(95%);
+}
+
+.edit-delete-btn {
+    display: flex;
+
+    font-size: 16px;
+    font-weight: 400;
+    gap: 11px;
+    cursor: pointer;
+    border: none;
+    color: $clr-dark-gray;
+    background-color: transparent;
+
+
+}
+
+.edit-delete-btn:hover {
+    color: $clr-light-blue;
+}
+
+.function-container {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    border-radius: 20px 20px 0 20px;
+
+    @media (max-width: 950px) {
+        display: none;
+    }
+}
+
+.name-right {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.contact-information-header {
+    margin-top: 21px;
+    margin-bottom: 21px;
+}
+
+.btn-grey {
+    background-color: $clr-dark-gray;
+    color: white;
+    font-size: 21px;
+    padding: 12px 0 12px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $clr-light-blue;
+        box-shadow: $btn-hvr-box-shadow;
+    }
+}
+
+.btn-mobile-details {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 16px;
+    bottom: 96px;
+    background-image: url('../../../assets/img/more_vert.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.details-dialog {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    border-radius: 20px 20px 0px 20px;
+    position: fixed;
+    position: fixed;
+    right: 72px;
+    bottom: 152px;
+}
+
+.contact-information-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 100px;
+
+    a {
+        margin-bottom: 7px;
+    }
+}

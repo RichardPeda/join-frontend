@@ -1,0 +1,48 @@
+@import '../../../../colors.scss';
+
+.contact-element {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    padding-block: 12px;
+    padding-inline: 16px;
+    border-radius: 10px;
+}
+
+.contact-element:hover:not(.contact-selected) {
+    background-color: $clr-light-gray;
+}
+
+.contact-selected {
+    background-color: $clr-dark-gray;
+    opacity: 0.95;
+    color: white;
+}
+
+.contact-selected:hover {
+    opacity: 1;
+}
+
+.addTask-profile-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ff7a00;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    font-size: 10px;
+}
+
+.addTask-dropdown-text {
+    flex: 1;
+    margin: 0;
+}
+
+.addTask-checkbox {
+    width: 18px;
+    height: 19px;
+}

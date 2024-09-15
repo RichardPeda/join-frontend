@@ -1,0 +1,55 @@
+@import '../../colors.scss';
+
+.summary-greet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 562px;
+    width: 385px;
+    margin-left: 80px;
+
+    @media (max-width: 1200px) {
+        position: absolute;
+        background-color: $clr-bg;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        z-index: 1;
+        width: 100%;
+
+    }
+}
+
+.greet-body {
+    display: flex;
+    max-height: 136px;
+    min-width: 385px;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+    @media (max-width: 1200px) {
+        min-width: unset;
+    }
+
+    p {
+        margin: 0;
+        font-size: 47px;
+        font-weight: 500;
+        color: $clr-dark-gray;
+
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 64px;
+        font-weight: 700;
+        color: $clr-light-blue;
+        // white-space: nowrap;
+    }
+}

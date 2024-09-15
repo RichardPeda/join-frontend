@@ -1,0 +1,23 @@
+@import '../../../colors.scss';
+
+
+.confirmation-container {
+    width: 326px;
+    height: 74px;
+    background-color: $clr-dark-gray;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .confirmation-container span {
+    font-size: 20px;
+    font-weight: 400;
+    color: white;
+    margin-right: 16px;
+  }
+
+  
+  
+  

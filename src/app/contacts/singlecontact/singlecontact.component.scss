@@ -1,0 +1,53 @@
+@import '../../../colors.scss';
+
+
+.initials-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 400;
+    border: 2px solid white;
+}
+
+.d-column-flex-start {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.contact-name {
+    font-size: 20px;
+    font-weight: 400;
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.contact-email {
+    font-size: 16px;
+    font-weight: 400;
+    color: $clr-light-blue;
+}
+
+.contact-container {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+    cursor: pointer;
+    border-radius: 10px;
+    width: min(352px, 98vw);
+
+    height: 78px;
+    padding: 15px 24px 15px 24px;
+}
+
+@media(min-width: 951px) {
+    .selected {
+        background-color: $clr-dark-gray;
+        color: white;
+    }
+}

@@ -1,0 +1,16 @@
+<div class="content">
+
+    <label id="example-radio-group-label">Move Task to column:</label>
+    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+        [(ngModel)]="data">
+        @for (item of moveTo; track item; let index = $index) {
+        <mat-radio-button class="example-radio-button" [checked]="data==item" [value]="item">{{list[index].name}}</mat-radio-button>
+        }
+       
+    </mat-radio-group>
+   
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="onNoClick()">No Thanks</button>
+        <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+    </mat-dialog-actions>
+</div>

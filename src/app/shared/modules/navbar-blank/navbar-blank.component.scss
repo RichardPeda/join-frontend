@@ -1,0 +1,135 @@
+@import '../../../../colors.scss';
+@import '../../../../mediaqueries.scss';
+
+
+#sidebar {
+  width: 232px;
+  padding: 64px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: $clr-dark-gray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+#sidebar-logo {
+  width: 100px;
+  margin-bottom: 114px;
+}
+
+#sidebar-nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  flex: 1;
+
+  @media (max-width: $media-tablet-size) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 850px;
+  }
+
+  @media (max-width:850px) {
+    width: 100%;
+  }
+
+  @media (max-width:850px) {
+    gap: 5px;
+  }
+
+}
+
+.sidebar-nav-element {
+  height: 46px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 400;
+  font-size: 16px;
+  color: $clr-font-light;
+  padding-left: 60px;
+  visibility: hidden;
+  @media (max-width:850px) {
+    font-size: 14px;
+  }
+}
+
+.sidebar-element-active {
+  background-color: $clr-sidebar-active;
+}
+
+.sidebar-nav-element:hover:not(.sidebar-element-active) {
+  background-color: $clr-sidebar-hover;
+  cursor: pointer;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.sidebar-link-element {
+  color: $clr-font-light;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  width: 100%;
+  height: 35px;
+  padding: 8px;
+  padding-left: 60px;
+
+  
+}
+
+.sidebar-link-element:hover {
+  font-weight: bold;
+  color: $clr-light-blue;
+  cursor: pointer;
+}
+
+
+
+@media (max-width: $media-tablet-size) {
+
+  #sidebar {
+    display: none;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    align-items: center;
+    padding: 0;
+  }
+
+  #sidebar-logo {
+    display: none;
+  }
+
+
+
+  .sidebar-nav-element {
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 0;
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .sidebar-links {
+    display: none;
+  }
+
+}

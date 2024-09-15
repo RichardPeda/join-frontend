@@ -1,0 +1,178 @@
+<div class="wrapper">
+    <h1 class="addTask-headline">Add Task</h1>
+
+    <form id="addTask-form" (submit)="createTask()" [formGroup]="taskForm">
+        <div class="addTask-column-wrapper">
+
+            <svg (click)="closeDialog()" class="detail-close" width="13" height="14" viewBox="0 0 13 14" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M6.24953 7.00008L11.4925 12.2431M1.00653 12.2431L6.24953 7.00008L1.00653 12.2431ZM11.4925 1.75708L6.24853 7.00008L11.4925 1.75708ZM6.24853 7.00008L1.00653 1.75708L6.24853 7.00008Z"
+                    stroke="#2A3647" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+
+
+
+            <div class="addTask-column left-column">
+                <div class="addTask-input-element">
+                    <label class="addTask-label required" for="addTask-input-title">Title</label>
+                    <input formControlName="title" name="title" class="addTask-inputField" type="text"
+                        id="addTask-input-title" placeholder="Enter a title" required />
+                    <div class="login-error"
+                        [ngClass]="{'full-opacity': validateRequiredFormMessage(taskForm.controls['title']) || showAllRequiredMessages(taskForm.controls['title'])}">
+                        <p>This field is required</p>
+                    </div>
+                </div>
+
+
+
+
+                <div class="addTask-input-element">
+                    <label class="addTask-label" for="addTask-input-description">Description</label>
+                    <textarea formControlName="description" name="description"
+                        class="addTask-inputField addTask-textarea" type="text" id="addTask-input-description"
+                        placeholder="Enter a description"></textarea>
+                </div>
+
+                <!-- Contacts -->
+                <div class="addTask-input-element mb-12">
+                    <label class="addTask-label" for="addTask-search-assign">Assigned To</label>
+                    <div appClickOutside (clickOutside)="closeDropdownContacts()" id="addTask-assigned"
+                        class="addTask-inputField addTask-assigned">
+                        <input formControlName="contactField" (input)="filterContacts(); openDropdownContacts($event)"
+                            (keyup)="filterContacts()" class="addTask-searchField" type="text"
+                            id="addTask-search-assign" placeholder="Select contacts to assign" />
+                        <div class="addTask-round-btn-frame">
+                            <img id="arrow-contacts" (click)="toggleDropdownContacts()" class="addTask-arrow-btn"
+                                src="../../assets/img/arrow-down-small.svg" alt="" />
+                        </div>
+                        <!-- d-none -->
+                        <div class="addTask-dropdown-container contacts" [ngClass]="{'d-none' : dropdownContactsClose}"
+                            id="contact-dropdown-container">
+                            @for (contact of filteredContacts; track $index) {
+                            <app-contact-selection (newSelection)="updateSelected()"
+                                [contact]="contact"></app-contact-selection>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="addTask-badges-container" id="contact-badges-container">
+                    @for (sel of selectedContacts; track $index) {
+                    <app-profile-badge [color]="sel.badgecolor" [initials]="sel.initials"></app-profile-badge>
+                    }
+                </div>
+            </div>
+            <div class="addTask-separator"></div>
+            <div class="addTask-column right-column">
+                <div class="addTask-input-element">
+                    <label class="addTask-label required" for="addTask-input-date">Due Date</label>
+                    <input formControlName="date" class="addTask-inputField" type="date" min="{{currentDate}}"
+                        id="addTask-input-date" placeholder="dd/mm/yy" />
+                    <div class="login-error"
+                        [ngClass]="{'full-opacity': validateRequiredFormMessage(taskForm.controls['date']) || showAllRequiredMessages(taskForm.controls['date'])}">
+                        <p>This field is required</p>
+                    </div>
+                </div>
+
+                <!-- Urgent, Medium, Low - Prio -->
+                <div class="addTask-input-element">
+                    <app-priority-selection [selection]="priority"
+                        (currentSelection)="setPriority($event)"></app-priority-selection>
+                </div>
+
+                <!-- Category -->
+                <div class="addTask-input-element">
+                    <label class="addTask-label required" for="addTask-category">Category</label>
+                    <div appClickOutside (clickOutside)="closeDropdownCategory()" id="category-container"
+                        class="addTask-inputField addTask-assigned">
+                        <input formControlName="category" class="addTask-searchField" type="text" id="addTask-category"
+                            placeholder="Select task category" readonly="true" />
+                        <div class="addTask-round-btn-frame">
+                            <img id="arrow-category" (click)="toggleDropdownCategory()" class="addTask-arrow-btn"
+                                src="../../assets/img/arrow-down-small.svg" alt="" />
+                        </div>
+
+                        <div class="addTask-dropdown-container" [ngClass]="{'d-none' : dropdownCategoryClose}"
+                            id="category-dropdown-container">
+                            <div (click)="selectCategory('Technical Task')" class="category-element">
+                                <p class="addTask-dropdown-text">Technical Task</p>
+                            </div>
+                            <div (click)="selectCategory('User Story')" class="category-element">
+                                <p class="addTask-dropdown-text">User Story</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="login-error"
+                        [ngClass]="{'full-opacity': validateRequiredFormMessage(taskForm.controls['category']) || showAllRequiredMessages(taskForm.controls['category'])}">
+                        <p>This field is required</p>
+                    </div>
+                </div>
+
+                <!-- Subtasks -->
+                <div class="addTask-input-element">
+                    <label class="addTask-label" for="addTask-subtask-input">Subtask</label>
+                    <div appClickOutsideMenu (clickOutside)="disableSubtaskInput()" (dblclick)="enableSubtaskInput()"
+                        class="addTask-inputField-subtask">
+                        <input (dblclick)="enableSubtaskInput()" formControlName="subtask"
+                            class="addTask-inputField-sub" type="text" #participantRef id="addTask-subtask-input"
+                            placeholder="Add new Subtask" />
+
+                        <div id="addTask-delete-accept-container" [ngClass]="{'d-none' : subtaskInputDisable}"
+                            class="addTask-delete-accept-container">
+                            <div class="addTask-round-btn-frame">
+                                <img (click)="disableSubtaskInput()" class="addTask-add-btn"
+                                    src="../../assets/img/cancel.svg" alt="" />
+                            </div>
+                            <div (click)="createSubtask()" class="addTask-round-btn-frame">
+                                <img class="addTask-add-btn" src="../../assets/img/checked.svg" alt="" />
+                            </div>
+                        </div>
+
+                        <div (click)="enableSubtaskInput()" [ngClass]="{'d-none': !subtaskInputDisable}"
+                            class="addTask-round-btn-frame" id="addTask-button-plus">
+                            <img class="addTask-add-btn" src="../../assets/img/add.svg" alt="" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="addTask-subtask-container" id="addTask-subtask-container">
+                    @for (subtask of subTasks; track subtask; let index = $index) {
+                    <app-subtask (updatedTitle)="changeSubtaskTitle($event,index)"
+                        [title]="subtask.title"></app-subtask>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <div class="addTask-controls">
+            <p class="addTask-hint">This field is required</p>
+            <div class="addTask-control-btn-container">
+                <button onclick="clearForm()" class="addTask-control-btn cancel-btn">
+                    Clear
+                    <svg class="cancel-svg" width="13" height="14" viewBox="0 0 13 14" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M6.24953 7.00008L11.4925 12.2431M1.00653 12.2431L6.24953 7.00008L1.00653 12.2431ZM11.4925 1.75708L6.24853 7.00008L11.4925 1.75708ZM6.24853 7.00008L1.00653 1.75708L6.24853 7.00008Z"
+                            stroke="#2A3647" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button [disabled]="taskForm.invalid" [ngClass]="{'form-validate' : taskForm.valid}"
+                    (click)="btnIsClicked()" id="addTask-submit-btn" type="submit"
+                    class="addTask-control-btn create-btn">
+                    Create Task
+                    <svg class="create-svg" width="38" height="30" viewBox="0 0 38 30" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.02832 15.0001L15.2571 26.0662L33.9717 3.93408" stroke="white" stroke-width="7"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+@if (showNotification) {
+<app-popup-notification [svgContent]="'board'" [label]="notificationText"></app-popup-notification>
+}

@@ -1,0 +1,89 @@
+@import '../../../../colors.scss';
+
+.addTask-label {
+    font-size: 20px;
+    color: $clr-dark-gray;
+    margin-bottom: 8px;
+}
+
+.addTask-btn-container {
+    border-radius: 10px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.addTask-prio-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 10px;
+    width: 136px;
+    height: 100%;
+    border: 1px solid $clr-light-gray;
+    font-size: 20px;
+    font-family: 'Inter', Helvetica, sans-serif;
+    color: $clr-dark-gray;
+    user-select: none;
+
+    @media (max-width: 450px) {
+
+        font-size: 16px;
+        padding-block: 4px;
+        width: 110px;
+
+    }
+}
+
+.addTask-prio-btn:hover:not(.selected) {
+    cursor: pointer;
+}
+
+.selected {
+    color: white;
+    font-weight: 700;
+}
+
+.urgent svg {
+    width: 20px;
+}
+
+.urgent.selected {
+    background-color: $clr-prio-red;
+}
+
+.medium.selected {
+    background-color: $clr-prio-orange;
+}
+
+.low.selected {
+    background-color: $clr-prio-green;
+}
+
+.urgent svg path {
+    fill: $clr-prio-red;
+}
+
+.selected svg path {
+    fill: white;
+}
+
+@media (max-width: 370px) {
+  
+
+    .addTask-prio-btn {
+        width: 95px;
+    }
+
+    .addTask-prio-btn,
+    .addTask-btn-container {
+        gap: 4px;
+    }
+
+    .addTask-prio-btn svg {
+        width: 18px;
+    }
+}

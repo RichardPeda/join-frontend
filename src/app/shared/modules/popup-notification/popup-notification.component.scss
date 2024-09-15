@@ -1,0 +1,37 @@
+@import '../../../../colors.scss';
+
+.background-overlay {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $clr-bg-overlay;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.confirmation-container {
+    min-width: 326px;
+    min-height: 74px;
+    background-color: $clr-dark-gray;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.confirmation-container span {
+    font-size: 20px;
+    font-weight: 400;
+    color: white;
+    // margin-right: 16px;
+}
+
+svg {
+    margin-left: 16px;
+}

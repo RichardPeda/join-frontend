@@ -1,0 +1,44 @@
+<div id="details-container" class="details-container d-column-flex-start">
+      <div id="detail-header" class="detail-header">
+        <div class="person-details-badge" [ngStyle]="{'background-color': detailcontact.badgecolor}">
+            {{detailcontact.initials}}
+        </div>
+        <div class="name-right">
+            <h2>{{detailcontact.name}}</h2>
+            <div class="function-container">
+                <button id="edit-btn" class="edit-delete-btn" (click)="contactService.editContact(detailcontact)">
+                    <img src="../../assets/img/pencil-black.svg" alt="">
+                    <span>Edit</span>
+                </button>
+                <button (click)="sessionService.deleteContact(detailcontact);  closeDialog()" id="delete-btn"
+                    class="edit-delete-btn">
+                    <img src="../../assets/img/trashcan-black.svg" alt="">
+                    <span>Delete</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="contact-information-header">Contact Information</div>
+    <div class="contact-information-container">
+        <h6>E-Mail</h6>
+        <a href="mailto:${email}">{{detailcontact.email}}</a>
+        <h6>Phone</h6>
+        <span>{{detailcontact.phone}}</span>
+    </div>
+    <div id="confirmed"></div>
+
+    <button [ngClass]="{'d-none': !mobile}" class="btn-grey btn-mobile-details" (click)="openDialog()"></button>
+
+    <div appClickOutside (clickOutside)="closeDialog()" class="details-dialog"
+        [ngClass]="{'d-none': !mobile || !showDialog}">
+        <button id="edit-btn" class="edit-delete-btn" (click)="contactService.editContact(detailcontact)">
+            <img src="../../assets/img/pencil-black.svg" alt="">
+            <span>Edit</span>
+        </button>
+        <button (click)="sessionService.deleteContact(detailcontact);  closeDialog()" id="delete-btn"
+            class="edit-delete-btn">
+            <img src="../../assets/img/trashcan-black.svg" alt="">
+            <span>Delete</span>
+        </button>
+    </div>
+</div>
