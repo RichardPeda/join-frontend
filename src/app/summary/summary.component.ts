@@ -79,26 +79,31 @@ export class SummaryComponent {
   sessionDataService = inject(SessiondataService);
 
   constructor(private userService: UserdataService, private router: Router) {
-    this.docId = this.userService.loadIdFromSessionStorage()!;
+    // this.docId = this.userService.loadIdFromSessionStorage()!;
   }
 
   ngOnInit() {
-       this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-      (user: User) => {
-        this.localUser = user;
-        this.greeting = this.greetingDay(this.localUser.name);
-        this.name = this.localUser.name;
+    this.sessionDataService.getAllTasks().subscribe((data) => {
+      if (data) console.log(data);
+    });
+    let username = localStorage.getItem('username')
+    if (username) this.name = username
+    //    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
+    //   (user: User) => {
+    //     this.localUser = user;
+    //     this.greeting = this.greetingDay(this.localUser.name);
+    //     this.name = this.localUser.name;
 
-        if (user) {
-          this.nrOfTasks.forEach((element) => {
-            element.amount = this.countTasksOfStatus(element.status);
-          });
-          this.nrTasksInBoard = this.countAllTasks();
-          this.getHighestPriority();
-          this.deadline = this.getDeadline();
-        }
-      }
-    );
+    //     if (user) {
+    //       this.nrOfTasks.forEach((element) => {
+    //         element.amount = this.countTasksOfStatus(element.status);
+    //       });
+    //       this.nrTasksInBoard = this.countAllTasks();
+    //       this.getHighestPriority();
+    //       this.deadline = this.getDeadline();
+    //     }
+    //   }
+    // );
     this.checkMobile();
     this.mobileGreeting();
   }
@@ -163,11 +168,11 @@ export class SummaryComponent {
     return Date.parse(date);
   }
 
- /**
-  * This function returns a number depending on the amount of task status.
-  * @param status task status - todo, await feedback, in progress
-  * @returns amount of task depending of status
-  */
+  /**
+   * This function returns a number depending on the amount of task status.
+   * @param status task status - todo, await feedback, in progress
+   * @returns amount of task depending of status
+   */
   countTasksOfStatus(status: string): number {
     let num = 0;
     if (this.localUser.tasks) {
@@ -244,7 +249,7 @@ export class SummaryComponent {
   checkMobile() {
     let width = window.innerWidth;
     this.mobileMode = width <= 1200 ? true : false;
-    this.mobileGreeting()
+    this.mobileGreeting();
   }
 
   /**

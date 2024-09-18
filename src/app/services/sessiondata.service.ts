@@ -17,6 +17,8 @@ import { Contact } from '../interfaces/contact.interface';
 import { AsyncSubject, BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Task } from '../interfaces/task.interface';
 import { ContactsService } from './contacts.service';
+import { environment } from '../../environments/environment.development';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
@@ -63,27 +65,29 @@ export class SessiondataService {
 
   unsubUser: any;
 
-  constructor(private userService: UserdataService) {
-    this.docId = this.userService.loadIdFromSessionStorage();
+  constructor(private userService: UserdataService, private http:HttpClient) {
 
-    this.unsubUser = onSnapshot(
-      this.userService.getSingleDocRef('users', this.docId),
-      (doc) => {
-        let data = doc.data();
-        this.user = this.userService.getCurrentUserData(doc.id, data!);
+    
+    // this.docId = this.userService.loadIdFromSessionStorage();
 
-        this.userSubject.next(this.user);
-        if (this.user) {
-          this.initials.next(this.getInitials(this.user.name));
-          this.username.next(this.user.name);
+    // this.unsubUser = onSnapshot(
+    //   this.userService.getSingleDocRef('users', this.docId),
+    //   (doc) => {
+    //     let data = doc.data();
+    //     this.user = this.userService.getCurrentUserData(doc.id, data!);
 
-          if (this.selectedContact && this.selectedContact.name === '') {
-            this.getFirstContact(this.user.contacts);
-            this._selectedContact.next(this.selectedContact);
-          }
-        }
-      }
-    );
+    //     this.userSubject.next(this.user);
+    //     if (this.user) {
+    //       this.initials.next(this.getInitials(this.user.name));
+    //       this.username.next(this.user.name);
+
+    //       if (this.selectedContact && this.selectedContact.name === '') {
+    //         this.getFirstContact(this.user.contacts);
+    //         this._selectedContact.next(this.selectedContact);
+    //       }
+    //     }
+    //   }
+    // );
   }
 
   getUserInfo() {
@@ -96,26 +100,36 @@ export class SessiondataService {
     this.unsubUser();
   }
 
+  getAllTasks(){
+    const url = environment.apiUrl + '/api/taskitems/'
+    let headers = new HttpHeaders()
+    headers = headers.append('Authorization', 'Token '+ localStorage.getItem('token'))
+
+    return this.http.get(url, {
+      headers: headers
+    })
+  }
+
   async getData(id: string) {
-    let docRef = this.userService.getSingleDocRef('users', this.docId);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
+    // let docRef = this.userService.getSingleDocRef('users', this.docId);
+    // const docSnap = await getDoc(docRef);
+    // return docSnap.data();
   }
 
   async setContact(contact: Contact[]) {
-    let docRef = this.userService.getSingleDocRef('users', this.docId);
+    // let docRef = this.userService.getSingleDocRef('users', this.docId);
 
-    await updateDoc(docRef, {
-      contacts: contact,
-    });
+    // await updateDoc(docRef, {
+    //   contacts: contact,
+    // });
   }
 
   async setTask(task: Task[]) {
-    let docRef = this.userService.getSingleDocRef('users', this.docId);
+    // let docRef = this.userService.getSingleDocRef('users', this.docId);
 
-    await updateDoc(docRef, {
-      tasks: task,
-    });
+    // await updateDoc(docRef, {
+    //   tasks: task,
+    // });
   }
 
   deleteContact(contact: Contact) {

@@ -37,12 +37,14 @@ export class HeaderComponent {
   }
 
   ngOnInit(){
-    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-      (user: User) => {
-        this.localUser = user;
+    let name = localStorage.getItem('username')
+    if (name)  this.localUser.userinitials = this.sessionDataService.getInitials(name)
+    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
+    //   (user: User) => {
+    //     this.localUser = user;
 
-      }
-    );
+    //   }
+    // );
   }
 
   ngOnDestroy() {

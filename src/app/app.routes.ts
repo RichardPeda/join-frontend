@@ -17,7 +17,7 @@ import { LegalNoticeBlankComponent } from './legal-notice-blank/legal-notice-bla
 export const routes: Routes = [
     { path: '', component: LoginComponent, data: { animation: 'openClosePage' } },
     { path: 'signup', component: SignUpComponent, data: { animation: 'openClosePage' } },
-    { path: 'summary/:id', component: SummaryComponent },
+    { path: 'summary', component: SummaryComponent },
     { path: 'contacts/:id', data:{title : 'contacts'}, component: ContactsComponent },
     { path: 'addtask/:id', data:{title : 'Add task'}, component: AddTaskPageComponent },
     { path: 'board/:id', data:{title : 'Board'}, component: BoardComponent },

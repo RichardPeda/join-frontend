@@ -16,6 +16,9 @@ import { Guest } from '../shared/models/guestUser.model';
 import { addDoc, collection, query, where } from '@angular/fire/firestore';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
 import { SessiondataService } from '../services/sessiondata.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { environment } from '../../environments/environment.development';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-sign-up',
@@ -27,6 +30,7 @@ import { SessiondataService } from '../services/sessiondata.service';
     CommonModule,
     RouterModule,
     PopupNotificationComponent,
+    HttpClientModule,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
@@ -45,7 +49,11 @@ export class SignUpComponent {
   showNotification = false;
   notificationText = '';
 
-  constructor(private userService: UserdataService, private router: Router) {
+  constructor(
+    private userService: UserdataService,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.newUserForm = new FormGroup(
       {
         name: new FormControl('', [Validators.required]),
@@ -73,22 +81,39 @@ export class SignUpComponent {
     let name = this.newUserForm.get('name')?.value;
     let email = this.newUserForm.get('email')?.value;
     let password = this.newUserForm.get('password_1')?.value;
-
-    if (await this.addNewUser(name, email, password)) {
-      this.notificationText = 'You Signed Up successfully';
-      this.showNotification = true;
-      this.clearForm();
-      setTimeout(() => {
-        this.router.navigate(['']);
-      }, 2500);
-    } else {
-      this.notificationText = 'This email is already registered';
-      this.showNotification = true;
-      this.clearForm();
-      setTimeout(() => {
-        this.showNotification = false;
-      }, 2500);
+    try {
+      let resp = await this.registerNewUser(email, password, name);
+      this.router.navigate(['']);
+      
+    } catch (e) {
+      console.error(e)
     }
+    
+    // if (await this.addNewUser(name, email, password)) {
+    //   this.notificationText = 'You Signed Up successfully';
+    //   this.showNotification = true;
+    //   this.clearForm();
+    //   setTimeout(() => {
+    //     this.router.navigate(['']);
+    //   }, 2500);
+    // } else {
+    //   this.notificationText = 'This email is already registered';
+    //   this.showNotification = true;
+    //   this.clearForm();
+    //   setTimeout(() => {
+    //     this.showNotification = false;
+    //   }, 2500);
+    // }
+  }
+
+  registerNewUser(email: string, password: string, name:string) {
+    const url = environment.apiUrl + '/api/signup/';
+    const body = {
+      email: email,
+      password: password,
+      name: name
+    };
+    return lastValueFrom(this.http.post(url, body));
   }
 
   /**
@@ -97,7 +122,7 @@ export class SignUpComponent {
    * @param name username
    * @param email user email address
    * @param password user password
-   * @returns 
+   * @returns
    */
   async addNewUser(name: string, email: string, password: string) {
     if (await this.userService.checkIfUserDontExists(name, email)) {
@@ -148,11 +173,11 @@ export class SignUpComponent {
     return name_1 + name_2;
   }
 
-  linkToPrivacyPolicy(){
-    this.router.navigate(['privacy-policy-blank'])
+  linkToPrivacyPolicy() {
+    this.router.navigate(['privacy-policy-blank']);
   }
 
-  linkToLegalNotice(){
-    this.router.navigate(['legal-notice-blank'])
+  linkToLegalNotice() {
+    this.router.navigate(['legal-notice-blank']);
   }
 }

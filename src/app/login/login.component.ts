@@ -27,6 +27,9 @@ import {
 } from '@angular/fire/firestore';
 import { LogoAnimationMobileComponent } from '../logo-animation-mobile/logo-animation-mobile.component';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
+import { environment } from '../../environments/environment.development';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -41,6 +44,7 @@ import { PopupNotificationComponent } from '../shared/modules/popup-notification
     LogoAnimationMobileComponent,
     RouterModule,
     PopupNotificationComponent,
+    HttpClientModule,
   ],
 })
 export class LoginComponent {
@@ -58,7 +62,8 @@ export class LoginComponent {
   constructor(
     public userService: UserdataService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private http: HttpClient
   ) {
     this.userform = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -103,27 +108,51 @@ export class LoginComponent {
   async onSubmit() {
     let email = this.userform.controls['email'].value;
     let password = this.userform.controls['password'].value;
-    const q = query(
-      collection(this.firestore, 'users'),
-      where('email', '==', email),
-      where('password', '==', password)
+    this.loginWithEmailAndPassword(email, password).then(
+      (data) => {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.name)
+        this.router.navigate(['summary']);
+      },
+      (error) => {
+        if (error.status == 400) {
+          this.wrongLogin();
+        }
+      }
     );
-    let docId = undefined;
-    let data;
+    try {
+    } catch (e) {
+      console.error(e);
+    }
 
-    let snapshot = await getDocs(q);
-    snapshot.forEach((doc) => {
-      docId = doc.id;
-      data = doc.data();
-    });
+    // const q = query(
+    //   collection(this.firestore, 'users'),
+    //   where('email', '==', email),
+    //   where('password', '==', password)
+    // );
+    // let docId = undefined;
+    // let data;
 
-    if (docId) {
-      this.router.navigate(['summary/' + docId]);
-      this.userService.saveIdInSessionStorage(docId);
-      this.rememberMe(email, password);
-    } else this.wrongLogin();
+    // let snapshot = await getDocs(q);
+    // snapshot.forEach((doc) => {
+    //   docId = doc.id;
+    //   data = doc.data();
+    // });
+
+    // if (docId) {
+    //   this.router.navigate(['summary/' + docId]);
+    //   this.userService.saveIdInSessionStorage(docId);
+    //   this.rememberMe(email, password);
+    // } else this.wrongLogin();
   }
-
+  loginWithEmailAndPassword(email: string, password: string) {
+    const url = environment.apiUrl + '/api/login/';
+    const body = {
+      username: email,
+      password: password,
+    };
+    return lastValueFrom<any>(this.http.post(url, body));
+  }
   /**
    * User not found in database, cannot be logged in. Show notification.
    */

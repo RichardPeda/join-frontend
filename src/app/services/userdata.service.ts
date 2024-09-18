@@ -37,15 +37,15 @@ export class UserdataService {
   userId = '';
 
   allUsers: User[] = [];
-  unsubUsers;
+  // unsubUsers;
 
   constructor(private route: ActivatedRoute) {
-    this.unsubUsers = onSnapshot(this.getUserRef(), (userList) => {
-      userList.forEach((user) => {
-        let data = user.data();
-        this.allUsers.push(this.getCurrentUserData(user.id, data));
-      });
-    });
+    // this.unsubUsers = onSnapshot(this.getUserRef(), (userList) => {
+    //   userList.forEach((user) => {
+    //     let data = user.data();
+    //     this.allUsers.push(this.getCurrentUserData(user.id, data));
+    //   });
+    // });
   }
 
   /**
@@ -253,21 +253,21 @@ export class UserdataService {
    * @param docId firebase doc id
    */
   async getUserData(docId: string) {
-    const docRef = doc(this.getUserRef(), docId);
-    const docSnap = await getDoc(docRef);
-    this.currentUser = this.getCurrentUserData(docId, docSnap);
+    // const docRef = doc(this.getUserRef(), docId);
+    // const docSnap = await getDoc(docRef);
+    // this.currentUser = this.getCurrentUserData(docId, docSnap);
   }
 
-  ngOnDestroy() {
-    this.unsubUsers();
-  }
+  // ngOnDestroy() {
+  //   this.unsubUsers();
+  // }
 
   getUserRef() {
     return collection(this.firestore, 'users');
   }
 
   getSingleDocRef(colId: string, docId: string) {
-    return doc(collection(this.firestore, colId), docId);
+    // return doc(collection(this.firestore, colId), docId);
   }
 
   async checkIfUserDontExists(name: string, email: string): Promise<boolean> {
