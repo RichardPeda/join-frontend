@@ -28,16 +28,16 @@ export class NavbarComponent {
   }
 
   linkToSummary() {
-    this.router.navigate(['summary/' + this.docId]);
+    this.router.navigate(['summary/']);
   }
   linkToBoard() {
-    this.router.navigate(['board/' + this.docId]);
+    this.router.navigate(['board/']);
   }
   linkToContacts() {
-    this.router.navigate(['contacts/' + this.docId]);
+    this.router.navigate(['contacts/']);
   }
   linkToAddTask() {
-    this.router.navigate(['addtask/' + this.docId]);
+    this.router.navigate(['addtask/']);
   }
   linkToLegalNotice(){
     this.router.navigate(['legal-notice'])
