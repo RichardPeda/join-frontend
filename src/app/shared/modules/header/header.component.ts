@@ -48,7 +48,7 @@ export class HeaderComponent {
   }
 
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
+    // this._subscriptionUser.unsubscribe();
   }
 
   linkToHelp() {

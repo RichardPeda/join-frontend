@@ -38,6 +38,8 @@ export class SessiondataService {
   userSubject: BehaviorSubject<any> = new BehaviorSubject({});
   public _selectedContact: BehaviorSubject<any> = new BehaviorSubject({});
   public _contactDeleted: BehaviorSubject<any> = new BehaviorSubject(false);
+  waitForData = false;
+  showLoadingScreen = false;
   contacts = [];
   tasks = [];
   profileBadgeColors = [
@@ -102,6 +104,17 @@ export class SessiondataService {
 
   getAllTasks(){
     const url = environment.apiUrl + '/api/taskitems/'
+    let headers = new HttpHeaders()
+    headers = headers.append('Authorization', 'Token '+ localStorage.getItem('token'))
+
+    return this.http.get(url, {
+      headers: headers
+    })
+  }
+
+  getAllContacts(){
+    this.loadingDataScreen()
+    const url = environment.apiUrl + '/api/contacts/'
     let headers = new HttpHeaders()
     headers = headers.append('Authorization', 'Token '+ localStorage.getItem('token'))
 
@@ -219,5 +232,16 @@ export class SessiondataService {
   showContactDetails(currentContact: Contact) {
     this.selectedContact = currentContact;
     this._selectedContact.next(this.selectedContact);
+  }
+
+  /**
+   * Show a loading screen for minimum 1s
+   */
+  loadingDataScreen(){
+    this.waitForData = true;
+    this.showLoadingScreen = true;
+    setTimeout(() => {
+      this.showLoadingScreen = false;
+    }, 1000);
   }
 }

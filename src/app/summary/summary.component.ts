@@ -109,7 +109,7 @@ export class SummaryComponent {
   }
 
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
+    // this._subscriptionUser.unsubscribe();
   }
 
   /**

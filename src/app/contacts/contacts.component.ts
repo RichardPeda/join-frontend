@@ -19,6 +19,7 @@ import { ActivatedRoute } from '@angular/router';
 import { User } from '../interfaces/user.interface';
 import { of } from 'rxjs';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
+import { LoadingScreenComponent } from '../shared/modules/loading-screen/loading-screen.component';
 
 @Component({
   selector: 'app-contacts',
@@ -31,6 +32,7 @@ import { PopupNotificationComponent } from '../shared/modules/popup-notification
     NavbarComponent,
     AddContactComponent,
     PopupNotificationComponent,
+    LoadingScreenComponent
   ],
   templateUrl: './contacts.component.html',
   styleUrl: './contacts.component.scss',
@@ -41,26 +43,27 @@ export class ContactsComponent {
   _subscriptionDeleted: any;
   $usercontact: any;
   registerLetters: string[] = [];
-  localUser: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [
-      {
-        badgecolor: '',
-        email: '',
-        contactID: '',
-        initials: '',
-        name: '',
-        phone: '',
-        register: '',
-        selected: false,
-      },
-    ],
-    tasks: [],
-  };
+  localContacts: Contact[] = [];
+  // localUser: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [
+  //     {
+  //       badgecolor: '',
+  //       email: '',
+  //       contactID: '',
+  //       initials: '',
+  //       name: '',
+  //       phone: '',
+  //       register: '',
+  //       selected: false,
+  //     },
+  //   ],
+  //   tasks: [],
+  // };
 
   showNotification = false;
   notificationText = 'Contact succesfully created';
@@ -95,33 +98,63 @@ export class ContactsComponent {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
     this.checkMobile();
 
-    this._subscriptionUser = this.sessionDataService
-      .getUserInfo()
-      .subscribe((user: User) => {
-        this.localUser = user;
-
-        if (this.localUser.contacts) {
-          this.sessionDataService.user.contacts.sort(
-            this.sessionDataService.compare
-          );
-          this.getRegisterLetters(this.localUser.contacts);
+    this.sessionDataService.getAllContacts().subscribe((data: any) => {
+      console.log('warten auf daten');
+      
+      if (data) {
+        this.localContacts = data.map((data: any): Contact => {
+          return {
+            contactID: data.id,
+            email: data.email,
+            badgecolor: data.badge_color,
+            initials: data.initials,
+            name: data.name,
+            phone: data.phone,
+            register: data.register,
+            selected: data.selected,
+          };
+        });
+        this.sessionDataService.waitForData=false
+        console.log(this.localContacts);
+        if (this.localContacts) {
+          this.localContacts.sort(this.sessionDataService.compare);
+          this.getRegisterLetters(this.localContacts);
         }
-      });
+        this.sessionDataService.showContactDetails(this.localContacts[0])
+        // this.sessionDataService.selectedContact = this.localContacts[0]
+        // this.selectedContact = this.localContacts[0];
+        console.log(this.selectedContact);
+      }
+    });
 
-    this._subscriptionContact =
-      this.sessionDataService._selectedContact.subscribe((contact: Contact) => {
-        if (contact) this.selectedContact = contact;
-      });
-      this._subscriptionDeleted =
-      this.sessionDataService._contactDeleted.subscribe((isDeleted: boolean) => {
-        if (isDeleted) this.showSnackbar('Contact successfully deleted')
-      });
+    // this._subscriptionUser = this.sessionDataService
+    //   .getUserInfo()
+    //   .subscribe((user: User) => {
+    //     this.localUser = user;
 
+    //     if (this.localUser.contacts) {
+    //       this.sessionDataService.user.contacts.sort(
+    //         this.sessionDataService.compare
+    //       );
+    //       this.getRegisterLetters(this.localUser.contacts);
+    //     }
+    //   });
+
+    // this._subscriptionContact =
+    //   this.sessionDataService._selectedContact.subscribe((contact: Contact) => {
+    //     if (contact) this.selectedContact = contact;
+    //   });
+    this._subscriptionDeleted =
+      this.sessionDataService._contactDeleted.subscribe(
+        (isDeleted: boolean) => {
+          if (isDeleted) this.showSnackbar('Contact successfully deleted');
+        }
+      );
   }
 
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
-    this._subscriptionContact.unsubscribe();
+    // this._subscriptionUser.unsubscribe();
+    // this._subscriptionContact.unsubscribe();
     this._subscriptionDeleted.unsubscribe();
   }
 
@@ -168,5 +201,9 @@ export class ContactsComponent {
       }
     });
     this.registerLetters.sort();
+  }
+
+  selectCurrentContact(contact: Contact) {
+    this.selectedContact = contact;
   }
 }

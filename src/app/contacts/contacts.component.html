@@ -1,5 +1,9 @@
 <app-header></app-header>
 <app-navbar></app-navbar>
+@if (this.sessionDataService.waitForData || this.sessionDataService.showLoadingScreen) {
+    <app-loading-screen></app-loading-screen>
+}
+
 
 <div class="content">
 
@@ -18,11 +22,11 @@
                 <div class="d-column-flex-start full-width">
                     <div class="registerbox">{{letter}}</div>
                 </div>
-                @for (contact of localUser.contacts; track $index) {
+                @for (contact of localContacts; track $index) {
                 @if (contact.register.includes(letter)) {
                 <app-singlecontact (click)="openDetailsMobile()"
-                    [isSelected]="(contact.contactID == selectedContact.contactID)"
-                    (selectedContact)="sessionDataService.showContactDetails($event)"
+                    [isSelected]="(contact.contactID == this.sessionDataService.selectedContact.contactID)"
+                    (selectedContact)="this.sessionDataService.showContactDetails($event)"
                     [contact]="contact"></app-singlecontact>
                 }
                 }
@@ -30,7 +34,7 @@
             </div>
         </div>
 
-        @if (localUser.contacts && localUser.contacts.length > 0) {
+        @if (localContacts && localContacts.length > 0) {
         <div class="contact-details-section" [ngClass]="{'showMobile': openDetailsMenu}">
             <div class="contacts-section-headline">
                 <h1 class="no-margin">Contacts</h1>
