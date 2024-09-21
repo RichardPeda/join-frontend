@@ -14,7 +14,7 @@ export class SinglecontactComponent {
 
   @Input() contact: Contact = {
     contactID : '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',

@@ -38,9 +38,11 @@ export class SessiondataService {
   userSubject: BehaviorSubject<any> = new BehaviorSubject({});
   public _selectedContact: BehaviorSubject<any> = new BehaviorSubject({});
   public _contactDeleted: BehaviorSubject<any> = new BehaviorSubject(false);
+
+  _globalContacts: BehaviorSubject<any> = new BehaviorSubject<Contact[]>([]);
   waitForData = false;
   showLoadingScreen = false;
-  contacts = [];
+  contacts: any = [];
   tasks = [];
   profileBadgeColors = [
     '#FF7A00',
@@ -67,22 +69,17 @@ export class SessiondataService {
 
   unsubUser: any;
 
-  constructor(private userService: UserdataService, private http:HttpClient) {
-
-    
+  constructor(private userService: UserdataService, private http: HttpClient) {
     // this.docId = this.userService.loadIdFromSessionStorage();
-
     // this.unsubUser = onSnapshot(
     //   this.userService.getSingleDocRef('users', this.docId),
     //   (doc) => {
     //     let data = doc.data();
     //     this.user = this.userService.getCurrentUserData(doc.id, data!);
-
     //     this.userSubject.next(this.user);
     //     if (this.user) {
     //       this.initials.next(this.getInitials(this.user.name));
     //       this.username.next(this.user.name);
-
     //       if (this.selectedContact && this.selectedContact.name === '') {
     //         this.getFirstContact(this.user.contacts);
     //         this._selectedContact.next(this.selectedContact);
@@ -102,25 +99,63 @@ export class SessiondataService {
     this.unsubUser();
   }
 
-  getAllTasks(){
-    const url = environment.apiUrl + '/api/taskitems/'
-    let headers = new HttpHeaders()
-    headers = headers.append('Authorization', 'Token '+ localStorage.getItem('token'))
+  getAllTasks() {
+    const url = environment.apiUrl + '/api/taskitems/';
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
 
     return this.http.get(url, {
-      headers: headers
-    })
+      headers: headers,
+    });
   }
 
-  getAllContacts(){
-    this.loadingDataScreen()
-    const url = environment.apiUrl + '/api/contacts/'
-    let headers = new HttpHeaders()
-    headers = headers.append('Authorization', 'Token '+ localStorage.getItem('token'))
+  getAllContacts() {
+    this.loadingDataScreen();
+    const url = environment.apiUrl + '/api/contacts/';
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
 
     return this.http.get(url, {
-      headers: headers
-    })
+      headers: headers,
+    });
+  }
+
+  createContact(newContact: Contact) {
+    this.loadingDataScreen();
+    const url = environment.apiUrl + '/api/contacts/create/';
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+
+    return this.http.post(url, newContact, options);
+  }
+
+  editContact(contact: Contact) {
+    console.log('edit kontakt wird aufgerufen');
+
+    // this.loadingDataScreen();
+    let id = contact.contactID;
+    const url = environment.apiUrl + '/api/contacts/' + id + '/';
+    console.log(url);
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+
+    return this.http.put(url, contact, options);
   }
 
   async getData(id: string) {
@@ -131,7 +166,6 @@ export class SessiondataService {
 
   async setContact(contact: Contact[]) {
     // let docRef = this.userService.getSingleDocRef('users', this.docId);
-
     // await updateDoc(docRef, {
     //   contacts: contact,
     // });
@@ -139,7 +173,6 @@ export class SessiondataService {
 
   async setTask(task: Task[]) {
     // let docRef = this.userService.getSingleDocRef('users', this.docId);
-
     // await updateDoc(docRef, {
     //   tasks: task,
     // });
@@ -194,7 +227,7 @@ export class SessiondataService {
 
   selectedContact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',
@@ -205,7 +238,7 @@ export class SessiondataService {
 
   emptyContact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',
@@ -226,7 +259,7 @@ export class SessiondataService {
     if (contactArray.length > 0) {
       this.selectedContact = contactArray[0];
       this.showContactDetails(this.selectedContact);
-    }else this.showContactDetails(this.emptyContact)
+    } else this.showContactDetails(this.emptyContact);
   }
 
   showContactDetails(currentContact: Contact) {
@@ -237,7 +270,7 @@ export class SessiondataService {
   /**
    * Show a loading screen for minimum 1s
    */
-  loadingDataScreen(){
+  loadingDataScreen() {
     this.waitForData = true;
     this.showLoadingScreen = true;
     setTimeout(() => {

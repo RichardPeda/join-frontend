@@ -13,7 +13,7 @@ import { ProfileBadgeComponent } from '../profile-badge/profile-badge.component'
 export class ContactSelectionComponent {
   @Input() contact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',

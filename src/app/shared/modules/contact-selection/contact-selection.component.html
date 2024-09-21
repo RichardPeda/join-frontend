@@ -1,6 +1,6 @@
 <div (click)="selectItem()" id="contact-element_${index}" [ngClass]="{'contact-selected' : contact.selected}"
     class="contact-element ${contactElementClass}">
-    <app-profile-badge [color]="contact.badgecolor" [initials]="contact.initials"></app-profile-badge>
+    <app-profile-badge [color]="contact.badge_color" [initials]="contact.initials"></app-profile-badge>
     <p class="addTask-dropdown-text">{{contact.name}}</p>
 
     @if (contact.selected) {

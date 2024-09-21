@@ -1,6 +1,6 @@
 export interface Contact {
-    contactID: string,
-    badgecolor: string,
+    contactID?: string,
+    badge_color: string,
     name: string,
     email: string,
     phone: string,

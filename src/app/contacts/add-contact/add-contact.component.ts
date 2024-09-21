@@ -46,7 +46,7 @@ import { ClickOutsideDirective } from '../../shared/click-outside.directive';
 export class AddContactComponent {
   @Input() contact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',
@@ -57,7 +57,7 @@ export class AddContactComponent {
 
   preparedcontact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',
@@ -72,6 +72,8 @@ export class AddContactComponent {
   @Output() isClosed = new EventEmitter<boolean>();
   @Output() listUpdate = new EventEmitter<boolean>();
   @Output() showNotification = new EventEmitter<string>();
+  @Output() createContact = new EventEmitter<Contact>();
+  @Output() editExistingContact = new EventEmitter<Contact>();
 
   constructor(
     public contactService: ContactsService,
@@ -86,6 +88,10 @@ export class AddContactComponent {
         this.preparedcontact = { ...this.contact };
       }
     }
+  }
+
+  ngOnInit() {
+    console.log(this.contact);
   }
 
   createTimeout() {
@@ -121,28 +127,39 @@ export class AddContactComponent {
    * Edit the selected contact (contactID found). Emit to update, reset the form and close popup.
    */
   editContact() {
-    let newContacts: Contact[] = this.sessionService.user.contacts;
+    // let newContacts: Contact[] = this.sessionService.user.contacts;
 
-    newContacts.forEach((contact, index) => {
-      if (contact.contactID === this.preparedcontact.contactID) {
-        let updatecontact: Contact = {
-          contactID: contact.contactID,
-          name: this.preparedcontact.name,
-          email: this.preparedcontact.email,
-          badgecolor: contact.badgecolor,
-          phone: this.preparedcontact.phone,
-          initials: this.sessionService.getInitials(this.preparedcontact.name),
-          register: this.sessionService
-            .getInitials(this.preparedcontact.name)
-            .charAt(0),
-          selected: false,
-        };
-
-        newContacts.splice(index, 1, updatecontact);
-        this.sessionService.setContact(newContacts);
-        this.sessionService.showContactDetails(updatecontact);
-      }
-    });
+    // newContacts.forEach((contact, index) => {
+    //   if (contact.contactID === this.preparedcontact.contactID) {
+    //     let updatecontact: Contact = {
+    //       contactID: contact.contactID,
+    //       name: this.preparedcontact.name,
+    //       email: this.preparedcontact.email,
+    //       badge_color: contact.badge_color,
+    //       phone: this.preparedcontact.phone,
+    //       initials: this.sessionService.getInitials(this.preparedcontact.name),
+    //       register: this.sessionService
+    //         .getInitials(this.preparedcontact.name)
+    //         .charAt(0),
+    //       selected: false,
+    //     };
+    let updatecontact: Contact = {
+      // contactID: contact.contactID,
+      name: this.preparedcontact.name,
+      email: this.preparedcontact.email,
+      badge_color: this.preparedcontact.badge_color,
+      phone: this.preparedcontact.phone,
+      initials: this.sessionService.getInitials(this.preparedcontact.name),
+      register: this.sessionService
+        .getInitials(this.preparedcontact.name)
+        .charAt(0),
+      selected: false,
+    };
+    this.editExistingContact.emit(this.preparedcontact)
+    // newContacts.splice(index, 1, updatecontact);
+    // this.sessionService.editContact(this.preparedcontact);
+    // this.sessionService.setContact(newContacts);
+    // this.sessionService.showContactDetails(updatecontact);
 
     this.closePopup();
   }
@@ -152,10 +169,9 @@ export class AddContactComponent {
    */
   async addNewContact() {
     let contact: Contact = {
-      contactID: Math.floor(100000 + Math.random() * 900000).toString(),
       name: this.preparedcontact.name,
       email: this.preparedcontact.email,
-      badgecolor: this.sessionService.getRandomBadgeColor(),
+      badge_color: this.sessionService.getRandomBadgeColor(),
       phone: this.preparedcontact.phone,
       initials: this.sessionService.getInitials(this.preparedcontact.name),
       register: this.sessionService
@@ -163,13 +179,21 @@ export class AddContactComponent {
         .charAt(0),
       selected: false,
     };
+    this.createContact.emit(contact);
 
-    let newContacts: Contact[] = this.sessionService.user.contacts;
-    newContacts.push(contact);
+    // this.sessionService.createContact(contact).subscribe(result => {
+    //   console.log(result);
+    //   if (result){
 
-    await this.sessionService.setContact(newContacts);
-    this.sessionService.showContactDetails(contact)
-    this.showNotification.emit('Contact succesfully created');
-    this.closePopup();
+    //   }
+    // })
+
+    // let newContacts: Contact[] = this.sessionService.user.contacts;
+    // newContacts.push(contact);
+
+    // await this.sessionService.setContact(newContacts);
+    // this.sessionService.showContactDetails(contact)
+    // this.showNotification.emit('Contact succesfully created');
+    // this.closePopup();
   }
 }

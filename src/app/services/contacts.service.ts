@@ -15,7 +15,7 @@ export class ContactsService {
   dummycontacts: Contact[] = [
     {
       contactID: '1',
-      badgecolor: '#1FD7C1',
+      badge_color: '#1FD7C1',
       initials: 'RS',
       register: 'R',
       name: 'Rainer Sonnenschein',
@@ -25,7 +25,7 @@ export class ContactsService {
     },
     {
       contactID: '2',
-      badgecolor: '#00BEE8',
+      badge_color: '#00BEE8',
       initials: 'PN',
       register: 'P',
       name: 'Pia Nist',
@@ -35,7 +35,7 @@ export class ContactsService {
     },
     {
       contactID: '3',
-      badgecolor: '#FFA35E',
+      badge_color: '#FFA35E',
       initials: 'AF',
       register: 'A',
       name: 'Arne Fröhlich',
@@ -45,7 +45,7 @@ export class ContactsService {
     },
     {
       contactID: '4',
-      badgecolor: '#FFA35E',
+      badge_color: '#FFA35E',
       initials: 'KE',
       register: 'K',
       name: 'Karl Ender',
@@ -55,7 +55,7 @@ export class ContactsService {
     },
     {
       contactID: '5',
-      badgecolor: '#FF745E',
+      badge_color: '#FF745E',
       initials: 'KH',
       register: 'K',
       name: 'Klara Himmel',
@@ -65,7 +65,7 @@ export class ContactsService {
     },
     {
       contactID: '6',
-      badgecolor: '#00BEE8',
+      badge_color: '#00BEE8',
       initials: 'CK',
       register: 'C',
       name: 'Christiane Krise',
@@ -75,7 +75,7 @@ export class ContactsService {
     },
     {
       contactID: '7',
-      badgecolor: '#FF7A00',
+      badge_color: '#FF7A00',
       initials: 'JD',
       register: 'J',
       name: 'John Doe',
@@ -85,7 +85,7 @@ export class ContactsService {
     },
     {
       contactID: '8',
-      badgecolor: '#FF5EB3',
+      badge_color: '#FF5EB3',
       initials: 'AS',
       register: 'A',
       name: 'Alice Smith',
@@ -95,7 +95,7 @@ export class ContactsService {
     },
     {
       contactID: '9',
-      badgecolor: '#6E52FF',
+      badge_color: '#6E52FF',
       initials: 'MP',
       register: 'M',
       name: 'Michael Phillips',
@@ -105,7 +105,7 @@ export class ContactsService {
     },
     {
       contactID: '10',
-      badgecolor: '#9327FF',
+      badge_color: '#9327FF',
       initials: 'EK',
       register: 'E',
       name: 'Emily King',
@@ -119,7 +119,7 @@ export class ContactsService {
 
   selectedContact: Contact = {
     contactID: '3',
-    badgecolor: '#FFA35E',
+    badge_color: '#FFA35E',
     initials: 'AF',
     register: 'A',
     name: 'Arne Bär',
@@ -130,7 +130,7 @@ export class ContactsService {
 
   emptyContact: Contact = {
     contactID: '',
-    badgecolor: '',
+    badge_color: '',
     name: '',
     email: '',
     phone: '',

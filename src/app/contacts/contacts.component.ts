@@ -32,7 +32,7 @@ import { LoadingScreenComponent } from '../shared/modules/loading-screen/loading
     NavbarComponent,
     AddContactComponent,
     PopupNotificationComponent,
-    LoadingScreenComponent
+    LoadingScreenComponent,
   ],
   templateUrl: './contacts.component.html',
   styleUrl: './contacts.component.scss',
@@ -41,6 +41,7 @@ export class ContactsComponent {
   _subscriptionUser: any;
   _subscriptionContact: any;
   _subscriptionDeleted: any;
+  _subscripeContacts: any;
   $usercontact: any;
   registerLetters: string[] = [];
   localContacts: Contact[] = [];
@@ -70,7 +71,7 @@ export class ContactsComponent {
 
   selectedContact: Contact = {
     contactID: '3',
-    badgecolor: '#FFA35E',
+    badge_color: '#FFA35E',
     initials: 'AF',
     register: 'A',
     name: 'Arne Fröhlich',
@@ -97,16 +98,16 @@ export class ContactsComponent {
   ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
     this.checkMobile();
-
+    // this.sessionDataService.getAllContacts();
+    // this.sessionDataService._globalContacts.next('foo')
     this.sessionDataService.getAllContacts().subscribe((data: any) => {
       console.log('warten auf daten');
-      
       if (data) {
         this.localContacts = data.map((data: any): Contact => {
           return {
             contactID: data.id,
             email: data.email,
-            badgecolor: data.badge_color,
+            badge_color: data.badge_color,
             initials: data.initials,
             name: data.name,
             phone: data.phone,
@@ -114,18 +115,28 @@ export class ContactsComponent {
             selected: data.selected,
           };
         });
-        this.sessionDataService.waitForData=false
-        console.log(this.localContacts);
+        this.sessionDataService.waitForData = false;
         if (this.localContacts) {
           this.localContacts.sort(this.sessionDataService.compare);
           this.getRegisterLetters(this.localContacts);
+          this.sessionDataService._globalContacts.next(this.localContacts);
         }
-        this.sessionDataService.showContactDetails(this.localContacts[0])
-        // this.sessionDataService.selectedContact = this.localContacts[0]
-        // this.selectedContact = this.localContacts[0];
-        console.log(this.selectedContact);
+        this.sessionDataService.showContactDetails(this.localContacts[0]);
       }
     });
+
+    this._subscripeContacts = this.sessionDataService._globalContacts.subscribe(
+      (contacts: Contact[]) => {
+        this.localContacts = contacts;
+
+        if (this.localContacts) {
+          this.sessionDataService.waitForData = false;
+          this.localContacts.sort(this.sessionDataService.compare);
+          this.getRegisterLetters(this.localContacts);
+        }
+        this.sessionDataService.showContactDetails(this.localContacts[0]);
+      }
+    );
 
     // this._subscriptionUser = this.sessionDataService
     //   .getUserInfo()
@@ -154,7 +165,7 @@ export class ContactsComponent {
 
   ngOnDestroy() {
     // this._subscriptionUser.unsubscribe();
-    // this._subscriptionContact.unsubscribe();
+    this._subscripeContacts.unsubscribe();
     this._subscriptionDeleted.unsubscribe();
   }
 
@@ -163,6 +174,27 @@ export class ContactsComponent {
     this.checkMobile();
   }
 
+  newContact(contact: Contact) {
+    this.sessionDataService.createContact(contact).subscribe((result:any) =>
+     {
+      if(result){
+        this.localContacts.push(result)
+        this.sessionDataService._globalContacts.next(this.localContacts)
+      }
+     }
+    )
+
+  }
+  editContact(contact:Contact){
+    this.sessionDataService.editContact(contact).subscribe((result:any) =>
+      {
+       if(result){       
+         this.localContacts.splice(this.localContacts.findIndex(e => e.contactID === result.id),1,result);
+         this.sessionDataService._globalContacts.next(this.localContacts)
+       }
+      }
+     )
+  }
   /**
    * Check if the page is in mobile mode. Close details if not.
    */

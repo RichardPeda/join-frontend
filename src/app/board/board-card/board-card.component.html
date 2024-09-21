@@ -16,7 +16,7 @@
     <div class="board-task-footer">
         <div class="board-task-profile-badge-container">
             @for (assignedTo of task.assignedContacts; track $index) {
-            <div class="board-task-profile-badge" [ngStyle]="{'background-color': assignedTo.badgecolor}">
+            <div class="board-task-profile-badge" [ngStyle]="{'background-color': assignedTo.badge_color}">
                 {{assignedTo.initials}}</div>
             }
         </div>
