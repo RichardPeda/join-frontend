@@ -14,7 +14,7 @@ import { ClickOutsideDirective } from '../../shared/click-outside.directive';
 })
 export class ContactDetailsComponent {
   detailcontact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     initials: '',
     register: '',

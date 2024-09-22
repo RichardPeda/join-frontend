@@ -23,15 +23,15 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
 })
 export class BoardCardComponent {
   @Input() task: Task = {
-    taskID: '',
+    // taskID: '',
     title: '',
     description: '',
-    assignedContacts: [],
+    contacts: [],
     priority: 'urgent',
     category: 'Technical Task',
-    dueDate: '',
+    due_date: '',
     status: 'toDo',
-    subtasks: [],
+    related_task: [],
   };
 
   @Output() setTask = new EventEmitter<Task>();

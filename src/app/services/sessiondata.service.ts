@@ -40,6 +40,7 @@ export class SessiondataService {
   public _contactDeleted: BehaviorSubject<any> = new BehaviorSubject(false);
 
   _globalContacts: BehaviorSubject<any> = new BehaviorSubject<Contact[]>([]);
+  _globalTasks: BehaviorSubject<any> = new BehaviorSubject<Task[]>([]);
   waitForData = false;
   showLoadingScreen = false;
   contacts: any = [];
@@ -141,11 +142,7 @@ export class SessiondataService {
   }
 
   editContact(contact: Contact) {
-    console.log('edit kontakt wird aufgerufen');
-
-    // this.loadingDataScreen();
-    let id = contact.contactID;
-    const url = environment.apiUrl + '/api/contacts/' + id + '/';
+    const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
     console.log(url);
 
     let headers = new HttpHeaders();
@@ -171,7 +168,18 @@ export class SessiondataService {
     // });
   }
 
-  async setTask(task: Task[]) {
+  editTask(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
+    console.log(url);
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+
+    return this.http.put(url, task, options);
     // let docRef = this.userService.getSingleDocRef('users', this.docId);
     // await updateDoc(docRef, {
     //   tasks: task,
@@ -182,7 +190,7 @@ export class SessiondataService {
     let update = false;
     let newContacts: Contact[] = this.user.contacts;
     newContacts.forEach((newContact, index) => {
-      if (newContact.contactID === contact.contactID) {
+      if (newContact.id === contact.id) {
         newContacts.splice(index, 1);
         update = true;
       }
@@ -226,7 +234,7 @@ export class SessiondataService {
   }
 
   selectedContact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     name: '',
     email: '',
@@ -237,7 +245,7 @@ export class SessiondataService {
   };
 
   emptyContact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     name: '',
     email: '',

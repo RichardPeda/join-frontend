@@ -34,33 +34,34 @@ import { PrioritySelectionComponent } from '../shared/modules/priority-selection
   styleUrl: './edit-task.component.scss',
 })
 export class EditTaskComponent {
-  localData: Task = {
-    taskID: '',
+  localTask: Task = {
+    id: '',
     title: '',
     description: '',
-    assignedContacts: [],
+    contacts: [],
     priority: 'medium',
     category: 'Technical Task',
-    dueDate: '',
+    due_date: '',
     status: 'toDo',
-    subtasks: [],
+    related_task: [],
   };
 
   _subscriptionUser: any;
   submitBtnClicked = false;
-  localUser: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [],
-    tasks: [],
-  };
+  // localUser: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [],
+  //   tasks: [],
+  // };
+  localContacts: Contact[] = [];
 
   subtasks: string[] = [];
 
-  filteredContacts: Contact[];
+  filteredContacts: Contact[] = [];
   selectedContacts: Contact[] = [];
   subTasks: Subtask[] = [];
 
@@ -77,44 +78,64 @@ export class EditTaskComponent {
     @Inject(MAT_DIALOG_DATA) public data: Task,
     public dialogRef: MatDialogRef<EditTaskComponent>
   ) {
-    this.localData = { ...data };
-    this.localUser = this.sessionDataService.user;
-    this.filteredContacts = this.localUser.contacts;
+    this.localTask = { ...data };
+
+    // this.localUser = this.sessionDataService.user;
+    if (this.localTask.contacts)
+      this.filteredContacts = this.localTask.contacts;
   }
 
   taskForm = this._formbuilder.group({
-    title: [this.localData.title, Validators.required],
-    description: [this.localData.description],
+    title: [this.localTask.title, Validators.required],
+    description: [this.localTask.description],
     contactField: [''],
-    date: [this.localData.dueDate, Validators.required],
-    category: [this.localData.category, Validators.required],
+    date: [this.localTask.due_date, Validators.required],
+    category: [this.localTask.category, Validators.required],
     subtask: [''],
   });
 
   ngOnInit() {
-    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-      (user: User) => {
-        this.localUser = user;
+    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
+    //   (user: User) => {
+    //     this.localUser = user;
+    //   }
+    // );
+    this.sessionDataService.getAllContacts().subscribe((data: any) => {
+      if (data) {
+        this.localContacts = data.map((data: any): Contact => {
+          return {
+            id: data.id,
+            email: data.email,
+            badge_color: data.badge_color,
+            initials: data.initials,
+            name: data.name,
+            phone: data.phone,
+            register: data.register,
+            selected: data.selected,
+          };
+        });
+        this.sessionDataService._globalContacts.next(this.localContacts);
+        this.joinContacts();
       }
-    );
-    this.joinContacts();
-    this.priority = this.localData.priority;
-    this.subTasks = this.localData.subtasks;
-    this.taskForm.controls['title'].setValue(this.localData.title);
-    this.taskForm.controls['description'].setValue(this.localData.description);
-    this.taskForm.controls['date'].setValue(this.localData.dueDate);
-    this.taskForm.controls['category'].setValue(this.localData.category);
+    });
+
+    this.priority = this.localTask.priority;
+    this.subTasks = this.localTask.related_task;
+    this.taskForm.controls['title'].setValue(this.localTask.title);
+    this.taskForm.controls['description'].setValue(this.localTask.description);
+    this.taskForm.controls['date'].setValue(this.localTask.due_date);
+    this.taskForm.controls['category'].setValue(this.localTask.category);
   }
 
   /**
    * For edit mode join the contacts with the selected contacts in one list.
    */
   joinContacts() {
-    this.filteredContacts = this.localUser.contacts;
+    if (this.localContacts) this.filteredContacts = this.localContacts;
 
     this.filteredContacts.forEach((contact) => {
-      this.localData.assignedContacts?.forEach((assigned) => {
-        if (contact.contactID == assigned.contactID) {
+      this.localTask.contacts?.forEach((assigned) => {
+        if (contact.id == assigned.id) {
           contact.selected = true;
         }
       });
@@ -122,7 +143,7 @@ export class EditTaskComponent {
   }
 
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
+    // this._subscriptionUser.unsubscribe();
   }
 
   /**
@@ -130,7 +151,7 @@ export class EditTaskComponent {
    */
   findselectedContacts() {
     this.selectedContacts = [];
-    this.localUser.contacts.forEach((c) => {
+    this.localContacts.forEach((c) => {
       if (c.selected) this.selectedContacts.push(c);
     });
   }
@@ -160,14 +181,14 @@ export class EditTaskComponent {
       ) {
         let task: Task = {
           title: this.taskForm.controls['title'].value!,
-          taskID: this.data.taskID,
+          id: this.localTask.id,
           description: this.taskForm.controls['description'].value!,
-          assignedContacts: this.selectedContacts,
+          contacts: this.selectedContacts,
           priority: this.priority,
           category: this.taskForm.controls['category'].value!,
-          dueDate: this.taskForm.controls['date'].value!,
+          due_date: this.taskForm.controls['date'].value!,
           status: this.data.status,
-          subtasks: this.subTasks,
+          related_task: this.subTasks,
         };
 
         this.data = task;
@@ -293,14 +314,14 @@ export class EditTaskComponent {
       this.taskForm.controls['contactField']?.value?.toLowerCase();
     if (compare && compare.length > 0) {
       this.filteredContacts = [];
-      this.localUser.contacts.forEach((contact) => {
+      this.localContacts.forEach((contact) => {
         let lowContactName = contact.name.toLowerCase();
         if (lowContactName.includes(compare)) {
           this.filteredContacts.push(contact);
         }
       });
     } else {
-      this.filteredContacts = this.localUser.contacts;
+      this.filteredContacts = this.localContacts;
     }
   }
 

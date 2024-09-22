@@ -25,7 +25,7 @@
                 @for (contact of localContacts; track $index) {
                 @if (contact.register.includes(letter)) {
                 <app-singlecontact (click)="openDetailsMobile()"
-                    [isSelected]="(contact.contactID == this.sessionDataService.selectedContact.contactID)"
+                    [isSelected]="(contact.id == this.sessionDataService.selectedContact.id)"
                     (selectedContact)="this.sessionDataService.showContactDetails($event)"
                     [contact]="contact"></app-singlecontact>
                 }

@@ -55,7 +55,7 @@ export class ContactsComponent {
   //     {
   //       badgecolor: '',
   //       email: '',
-  //       contactID: '',
+  //       id: '',
   //       initials: '',
   //       name: '',
   //       phone: '',
@@ -70,7 +70,7 @@ export class ContactsComponent {
   notificationText = 'Contact succesfully created';
 
   selectedContact: Contact = {
-    contactID: '3',
+    id: '3',
     badge_color: '#FFA35E',
     initials: 'AF',
     register: 'A',
@@ -101,11 +101,10 @@ export class ContactsComponent {
     // this.sessionDataService.getAllContacts();
     // this.sessionDataService._globalContacts.next('foo')
     this.sessionDataService.getAllContacts().subscribe((data: any) => {
-      console.log('warten auf daten');
       if (data) {
         this.localContacts = data.map((data: any): Contact => {
           return {
-            contactID: data.id,
+            id: data.id,
             email: data.email,
             badge_color: data.badge_color,
             initials: data.initials,
@@ -189,7 +188,7 @@ export class ContactsComponent {
     this.sessionDataService.editContact(contact).subscribe((result:any) =>
       {
        if(result){       
-         this.localContacts.splice(this.localContacts.findIndex(e => e.contactID === result.id),1,result);
+         this.localContacts.splice(this.localContacts.findIndex(e => e.id === result.id),1,result);
          this.sessionDataService._globalContacts.next(this.localContacts)
        }
       }

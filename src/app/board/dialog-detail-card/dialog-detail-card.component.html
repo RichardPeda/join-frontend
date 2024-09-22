@@ -14,7 +14,7 @@
     <p class="board-task-description detail-card-description">{{data.description}}</p>
     <div class="detail-card-line">
         <div class="detail-card-line-label">Due date:</div>
-        <div class="detail-card-line-info">{{data.dueDate}}</div>
+        <div class="detail-card-line-info">{{data.due_date}}</div>
     </div>
     <div class="detail-card-line">
         <div class="detail-card-line-label">Priority:</div>
@@ -22,10 +22,10 @@
             <app-priority-badge [priority]="data.priority" [ngStyle]="{'margin-left': 10 + 'px'}"></app-priority-badge>
         </div>
     </div>
-    @if (data.assignedContacts && data.assignedContacts.length > 0) {
+    @if (data.contacts && data.contacts.length > 0) {
     <div class="detail-card-badge-container">
         Assigned To:
-        @for (contact of data.assignedContacts; track $index) {
+        @for (contact of data.contacts; track $index) {
         <div class="details-badge-container">
             <div class="details-profile-badge" [ngStyle]="{'background-color': contact.badge_color}">
                 {{contact.initials}}
@@ -36,10 +36,10 @@
     </div>
     }
 
-    @if (data.subtasks && data.subtasks.length > 0) {
+    @if (data.related_task && data.related_task.length > 0) {
     <div class="detail-card-subtask-container">
         Subtasks:
-        @for (subtask of data.subtasks; track subtask; let index = $index) {
+        @for (subtask of data.related_task; track subtask; let index = $index) {
         @if (subtask.done) {
         <div class="detail-card-subtask">
 

@@ -28,7 +28,7 @@ export class DialogDetailCardComponent {
    * @param index index of subtask
    */
   toggleSubtaskStatus(index: number) {
-    this.data.subtasks[index].done = !this.data.subtasks[index].done;
+    this.data.related_task[index].done = !this.data.related_task[index].done;
   }
 
   /**

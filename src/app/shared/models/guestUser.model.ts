@@ -18,7 +18,7 @@ export class Guest implements User {
       (this.password = password),
       (this.contacts = [
         {
-          contactID: '1',
+          id: '1',
           badge_color: '#1FD7C1',
           initials: 'RS',
           register: 'R',
@@ -28,7 +28,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '2',
+          id: '2',
           badge_color: '#00BEE8',
           initials: 'PN',
           register: 'P',
@@ -38,7 +38,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '3',
+          id: '3',
           badge_color: '#FFA35E',
           initials: 'AF',
           register: 'A',
@@ -48,7 +48,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '4',
+          id: '4',
           badge_color: '#FFA35E',
           initials: 'KE',
           register: 'K',
@@ -58,7 +58,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '5',
+          id: '5',
           badge_color: '#FF745E',
           initials: 'KH',
           register: 'K',
@@ -68,7 +68,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '6',
+          id: '6',
           badge_color: '#00BEE8',
           initials: 'CK',
           register: 'C',
@@ -78,7 +78,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '7',
+          id: '7',
           badge_color: '#FF7A00',
           initials: 'JD',
           register: 'J',
@@ -88,7 +88,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '8',
+          id: '8',
           badge_color: '#FF5EB3',
           initials: 'AS',
           register: 'A',
@@ -98,7 +98,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '9',
+          id: '9',
           badge_color: '#6E52FF',
           initials: 'MP',
           register: 'M',
@@ -108,7 +108,7 @@ export class Guest implements User {
           selected: false,
         },
         {
-          contactID: '10',
+          id: '10',
           badge_color: '#9327FF',
           initials: 'EK',
           register: 'E',
@@ -121,11 +121,11 @@ export class Guest implements User {
       (this.tasks = [
         {
           title: 'Create Landing Page Design',
-          taskID: '123456',
+          id: '123456',
           description: 'Design a captivating landing page for the new website.',
-          assignedContacts: [
+          contacts: [
             {
-              contactID: '5',
+              id: '5',
               badge_color: '#FF745E',
               initials: 'KH',
               register: 'K',
@@ -135,7 +135,7 @@ export class Guest implements User {
               selected: true,
             },
             {
-              contactID: '6',
+              id: '6',
               badge_color: '#00BEE8',
               initials: 'CK',
               register: 'C',
@@ -147,21 +147,21 @@ export class Guest implements User {
           ],
           priority: 'urgent',
           category: 'Technical Task',
-          dueDate: '2024-07-28',
+          due_date: '2024-07-28',
           status: 'inProgress',
-          subtasks: [
+          related_task: [
             { title: 'Draft initial concepts', done: false },
             { title: 'Gather feedback from stakeholders', done: false },
           ],
         },
         {
           title: 'Develop User Registration Feature',
-          taskID: '954782',
+          id: '954782',
           description:
             'Implement user registration functionality for the website.',
-          assignedContacts: [
+          contacts: [
             {
-              contactID: '7',
+              id: '7',
               badge_color: '#FF7A00',
               initials: 'JD',
               register: 'J',
@@ -171,7 +171,7 @@ export class Guest implements User {
               selected: true,
             },
             {
-              contactID: '8',
+              id: '8',
               badge_color: '#FF5EB3',
               initials: 'AS',
               register: 'A',
@@ -183,20 +183,20 @@ export class Guest implements User {
           ],
           priority: 'medium',
           category: 'Technical Task',
-          dueDate: '2024-07-15',
+          due_date: '2024-07-15',
           status: 'toDo',
-          subtasks: [
+          related_task: [
             { title: 'Design database schema', done: false },
             { title: 'Write backend code', done: false },
           ],
         },
         {
           title: 'Write About Us Page Content',
-          taskID: '234567',
+          id: '234567',
           description: 'Craft engaging content for the About Us page.',
-          assignedContacts: [
+          contacts: [
             {
-              contactID: '10',
+              id: '10',
               badge_color: '#9327FF',
               initials: 'EK',
               register: 'E',
@@ -208,18 +208,18 @@ export class Guest implements User {
           ],
           priority: 'low',
           category: 'User Story',
-          dueDate: '2024-04-12',
+          due_date: '2024-04-12',
           status: 'done',
-          subtasks: [],
+          related_task: [],
         },
         {
           title: 'Optimize Website Performance',
-          taskID: '345678',
+          id: '345678',
           description:
             'Identify and fix performance bottlenecks on the website.',
-          assignedContacts: [
+          contacts: [
             {
-              contactID: '9',
+              id: '9',
               badge_color: '#6E52FF',
               initials: 'MP',
               register: 'M',
@@ -229,7 +229,7 @@ export class Guest implements User {
               selected: true,
             },
             {
-              contactID: '4',
+              id: '4',
               badge_color: '#FFA35E',
               initials: 'KE',
               register: 'K',
@@ -241,20 +241,20 @@ export class Guest implements User {
           ],
           priority: 'urgent',
           category: 'Technical Task',
-          dueDate: '2024-08-20',
+          due_date: '2024-08-20',
           status: 'awaitFeedback',
-          subtasks: [
+          related_task: [
             { title: 'Conduct performance analysis', done: true },
             { title: 'Implement optimizations', done: false },
           ],
         },
         {
           title: 'Create Contact Form Feature',
-          taskID: '456789',
+          id: '456789',
           description: 'Build a contact form for user inquiries.',
-          assignedContacts: [
+          contacts: [
             {
-              contactID: '3',
+              id: '3',
               badge_color: '#FFA35E',
               initials: 'AF',
               register: 'A',
@@ -264,7 +264,7 @@ export class Guest implements User {
               selected: true,
             },
             {
-              contactID: '7',
+              id: '7',
               badge_color: '#FF7A00',
               initials: 'JD',
               register: 'J',
@@ -276,9 +276,9 @@ export class Guest implements User {
           ],
           priority: 'medium',
           category: 'Technical Task',
-          dueDate: '2024-06-18',
+          due_date: '2024-06-18',
           status: 'inProgress',
-          subtasks: [
+          related_task: [
             { title: 'Design form layout', done: true },
             { title: 'Implement form validation', done: false },
           ],

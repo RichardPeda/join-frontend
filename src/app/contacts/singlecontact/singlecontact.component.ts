@@ -13,7 +13,7 @@ export class SinglecontactComponent {
   @Output() selectedContact = new EventEmitter<Contact>();
 
   @Input() contact: Contact = {
-    contactID : '',
+    id : '',
     badge_color: '',
     name: '',
     email: '',

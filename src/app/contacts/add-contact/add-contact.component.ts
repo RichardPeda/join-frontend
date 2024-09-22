@@ -45,7 +45,7 @@ import { ClickOutsideDirective } from '../../shared/click-outside.directive';
 })
 export class AddContactComponent {
   @Input() contact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     name: '',
     email: '',
@@ -56,7 +56,7 @@ export class AddContactComponent {
   };
 
   preparedcontact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     name: '',
     email: '',

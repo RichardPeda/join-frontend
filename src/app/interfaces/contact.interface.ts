@@ -1,5 +1,5 @@
 export interface Contact {
-    contactID?: string,
+    id?: string,
     badge_color: string,
     name: string,
     email: string,

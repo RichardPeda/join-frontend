@@ -221,10 +221,10 @@ export class SummaryComponent {
     this.taskHighestPriorityArray.forEach((task) => {
       if (
         difference >=
-        this.getTimestamp(task.dueDate) - this.currentTimestamp
+        this.getTimestamp(task.due_date) - this.currentTimestamp
       ) {
-        difference = this.getTimestamp(task.dueDate) - this.currentTimestamp;
-        date = task.dueDate;
+        difference = this.getTimestamp(task.due_date) - this.currentTimestamp;
+        date = task.due_date;
       }
     });
     let newDate = new Date(date);

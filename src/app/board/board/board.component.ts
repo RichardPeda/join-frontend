@@ -51,17 +51,18 @@ export class BoardComponent {
   _subscriptionDialog: any;
   _subscriptionEditDialog: any;
   _subscriptionAddDialog: any;
+  _subscripeTasks:any;
   editmode = false;
   mobileMode = false;
-  localUser: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [],
-    tasks: [],
-  };
+  // localUser: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [],
+  //   tasks: [],
+  // };
   docId = '';
   todo = ['toDo'];
   inProgress = ['inProgress'];
@@ -69,6 +70,7 @@ export class BoardComponent {
   done = ['done'];
 
   dragableTask: Object = [];
+  localTasks: Task[] = [];
 
   amountTasksTodo = 0;
   amountTasksInProgress = 0;
@@ -88,32 +90,62 @@ export class BoardComponent {
     private dialog: MatDialog,
     private router: Router
   ) {
-    this.localUser = this.sessionDataService.user;
+    // this.localUser = this.sessionDataService.user;
     this.docId = this.userService.loadIdFromSessionStorage()!;
   }
 
   async ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
     this.checkMobile();
-    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-      (user: User) => {
-        this.localUser = user;
-        if (this.localUser.tasks) this.countTaskStatus();
+
+    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
+    //   (user: User) => {
+    //     this.localUser = user;
+    //     if (this.localUser.tasks) this.countTaskStatus();
+    //   }
+    // );
+    this.sessionDataService.getAllTasks().subscribe((data: any) => {
+      if (data) {
+        this.localTasks = data.map((data: any): Task => {
+          return {
+            id: data.id,
+            category: data.category,
+            description: data.description,
+            due_date: data.due_date,
+            priority: data.priority,
+            status: data.status,
+            title: data.title,
+            related_task: data.related_task,
+            contacts: data.contacts,
+          };
+        });
+        console.log(this.localTasks);
+        this.sessionDataService._globalTasks.next(this.localTasks)
+        this.countTaskStatus();
+        
+      }
+    });
+
+    this._subscripeTasks = this.sessionDataService._globalTasks.subscribe(
+      (contacts: Task[]) => {
+        this.localTasks = contacts;
+
       }
     );
+
   }
 
   /**
    * Unsubscribe the Observables
    */
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
-    if (this._subscriptionDialog) {
-      this._subscriptionDialog.unsubscribe();
-    }
-    if (this._subscriptionEditDialog) {
-      this._subscriptionEditDialog.unsubscribe();
-    }
+    // this._subscriptionUser.unsubscribe();
+    // if (this._subscriptionDialog) {
+    //   this._subscriptionDialog.unsubscribe();
+    // }
+    // if (this._subscriptionEditDialog) {
+    //   this._subscriptionEditDialog.unsubscribe();
+    // }
   }
 
   /**
@@ -126,15 +158,15 @@ export class BoardComponent {
     const dialogRef = this.dialog.open(DialogDetailCardComponent, {
       minWidth: 'min(400px, 100%)',
       maxHeight: '100%',
-      data: this.localUser.tasks[index],
+      data: this.localTasks[index],
       scrollStrategy: new NoopScrollStrategy(),
     });
     this._subscriptionDialog = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.event == 'editmode') {
         this.openEditDialog(index);
       } else if (result && result.event == 'delete')
-        this.localUser.tasks.splice(index, 1);
-      this.sessionDataService.setTask(this.localUser.tasks);
+        this.localTasks.splice(index, 1);
+      this.sessionDataService.editTask(this.localTasks[index]);
     });
   }
 
@@ -142,19 +174,26 @@ export class BoardComponent {
    * Opens a MatDialog, to edit the task
    * @param index index of task
    */
-  openEditDialog(index: number) {
+  openEditDialog(index: number) {   
+       
     const editDialogRef = this.dialog.open(EditTaskComponent, {
       minWidth: 'min(400px, 100%)',
       maxHeight: '100%',
-      data: this.localUser.tasks[index],
+      data: this.localTasks[index],
       scrollStrategy: new NoopScrollStrategy(),
     });
     this._subscriptionEditDialog = editDialogRef
       .afterClosed()
       .subscribe((result) => {
         if (result && result.event == 'update') {
-          this.localUser.tasks.splice(index, 1, result.data);
-          this.sessionDataService.setTask(this.localUser.tasks);
+          console.log(result.data);
+          
+          this.localTasks.splice(index, 1, result.data);
+          this.sessionDataService.editTask(this.localTasks[index]).subscribe((data: any) => {
+            if (data){
+              this.sessionDataService._globalTasks.next(this.localTasks)
+            }
+          });
         }
       });
   }
@@ -175,7 +214,7 @@ export class BoardComponent {
    */
   countTaskStatus() {
     this.resetCount();
-    this.localUser.tasks.forEach((element) => {
+    this.localTasks.forEach((element) => {
       if (element.status == 'toDo') this.amountTasksTodo++;
       if (element.status == 'awaitFeedback') this.amountTasksAwaitFeedback++;
       if (element.status == 'inProgress') this.amountTasksInProgress++;
@@ -260,7 +299,7 @@ export class BoardComponent {
     this.rotateValue = 0;
 
     if (event.previousContainer !== event.container) {
-      this.localUser.tasks.forEach((task) => {
+      this.localTasks.forEach((task) => {
         if (task == this.dragableTask) {
           if (
             column == 'toDo' ||
@@ -269,7 +308,8 @@ export class BoardComponent {
             column == 'done'
           ) {
             task.status = column;
-            this.updateTaskStatus();
+            this.updateTaskStatus(task);
+            this.countTaskStatus();
           }
         }
       });
@@ -308,8 +348,13 @@ export class BoardComponent {
   /**
    * Save the updated tasks in the database
    */
-  updateTaskStatus() {
-    this.sessionDataService.setTask(this.localUser.tasks);
+  updateTaskStatus(task:Task) {
+    this.sessionDataService.editTask(task).subscribe((data:any) =>{
+      if (data) {
+        this.sessionDataService._globalTasks.next(this.localTasks)
+       
+      }
+    });
   }
 
   /**
@@ -320,14 +365,14 @@ export class BoardComponent {
     if (this.searchInput) {
       this.filteredTasks = [];
       this.filterActive = true;
-      this.localUser.tasks.forEach((task) => {
+      this.localTasks.forEach((task) => {
         if (
           task.title.toLowerCase().includes(this.searchInput.toLowerCase()) ||
           task.description
             .toLowerCase()
             .includes(this.searchInput.toLowerCase())
         ) {
-          this.filteredTasks.push(task.taskID);
+          this.filteredTasks.push(task.id!);
         }
       });
     } else this.filterActive = false;

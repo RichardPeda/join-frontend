@@ -166,18 +166,18 @@ export class AddTaskComponent {
       ) {
         let task: Task = {
           title: this.taskForm.controls['title'].value!,
-          taskID: Math.floor(100000 + Math.random() * 900000).toString(),
+          // taskID: Math.floor(100000 + Math.random() * 900000).toString(),
           description: this.taskForm.controls['description'].value!,
-          assignedContacts: this.selectedContacts,
+          contacts: this.selectedContacts,
           priority: this.priority,
           category: this.taskForm.controls['category'].value!,
-          dueDate: this.taskForm.controls['date'].value!,
+          due_date: this.taskForm.controls['date'].value!,
           status: this.status,
-          subtasks: this.subTasks,
+          related_task: this.subTasks,
         };
         newTasks.push(task);
         this.sessionDataService.reqTaskStatus = 'toDo';
-        this.sessionDataService.setTask(newTasks);
+        // this.sessionDataService.editTask(task); //TODO Create Task
         this.resetForm();
         this.openSnackbar();
         setTimeout(() => {

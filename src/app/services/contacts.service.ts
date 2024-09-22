@@ -14,7 +14,7 @@ export class ContactsService {
 
   dummycontacts: Contact[] = [
     {
-      contactID: '1',
+      id: '1',
       badge_color: '#1FD7C1',
       initials: 'RS',
       register: 'R',
@@ -24,7 +24,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '2',
+      id: '2',
       badge_color: '#00BEE8',
       initials: 'PN',
       register: 'P',
@@ -34,7 +34,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '3',
+      id: '3',
       badge_color: '#FFA35E',
       initials: 'AF',
       register: 'A',
@@ -44,7 +44,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '4',
+      id: '4',
       badge_color: '#FFA35E',
       initials: 'KE',
       register: 'K',
@@ -54,7 +54,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '5',
+      id: '5',
       badge_color: '#FF745E',
       initials: 'KH',
       register: 'K',
@@ -64,7 +64,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '6',
+      id: '6',
       badge_color: '#00BEE8',
       initials: 'CK',
       register: 'C',
@@ -74,7 +74,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '7',
+      id: '7',
       badge_color: '#FF7A00',
       initials: 'JD',
       register: 'J',
@@ -84,7 +84,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '8',
+      id: '8',
       badge_color: '#FF5EB3',
       initials: 'AS',
       register: 'A',
@@ -94,7 +94,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '9',
+      id: '9',
       badge_color: '#6E52FF',
       initials: 'MP',
       register: 'M',
@@ -104,7 +104,7 @@ export class ContactsService {
       selected: false,
     },
     {
-      contactID: '10',
+      id: '10',
       badge_color: '#9327FF',
       initials: 'EK',
       register: 'E',
@@ -118,7 +118,7 @@ export class ContactsService {
   contacts: Contact[] = [];
 
   selectedContact: Contact = {
-    contactID: '3',
+    id: '3',
     badge_color: '#FFA35E',
     initials: 'AF',
     register: 'A',
@@ -129,7 +129,7 @@ export class ContactsService {
   };
 
   emptyContact: Contact = {
-    contactID: '',
+    id: '',
     badge_color: '',
     name: '',
     email: '',
@@ -162,7 +162,7 @@ export class ContactsService {
     let contactArray = this.sessionService.user.contacts;
     contactArray.sort(this.sessionService.compare);
     contactArray.forEach((contact) => {
-      if (contact.contactID === id) {
+      if (contact.id === id) {
         this.selectedContact = contact;
         this._selectedContact.next(this.selectedContact);
       }
