@@ -13,7 +13,7 @@ export class ProgressBarComponent {
   @Input() subtasks: Subtask[] = [
     {
       title: '',
-      done: false,
+      checked: false,
     },
   ];
 
@@ -35,7 +35,7 @@ export class ProgressBarComponent {
     this.finishedSubtasks = 0;
     this.totalSubtasks = this.subtasks.length;
     this.subtasks.forEach((subtask) => {
-      if (subtask.done) this.finishedSubtasks++;
+      if (subtask.checked) this.finishedSubtasks++;
     });
     this.progress =
       this.totalSubtasks > 0

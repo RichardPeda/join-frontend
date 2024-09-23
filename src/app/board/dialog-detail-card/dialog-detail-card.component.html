@@ -40,7 +40,7 @@
     <div class="detail-card-subtask-container">
         Subtasks:
         @for (subtask of data.related_task; track subtask; let index = $index) {
-        @if (subtask.done) {
+        @if (subtask.checked) {
         <div class="detail-card-subtask">
 
             <svg (click)="toggleSubtaskStatus(index)" class="addTask-checkbox" viewBox="0 0 18 19" fill="none"

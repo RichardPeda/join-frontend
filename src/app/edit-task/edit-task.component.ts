@@ -326,13 +326,13 @@ export class EditTaskComponent {
   }
 
   /**
-   * Create new subtask and add it to the array. Always set to undone.
+   * Create new subtask and add it to the array. Always set to unchecked.
    */
   createSubtask() {
     if (this.taskForm.controls['subtask'].valid) {
       let subtask: Subtask = {
         title: this.taskForm.controls['subtask'].value!,
-        done: false,
+        checked: false,
       };
       this.subTasks.push(subtask);
     }

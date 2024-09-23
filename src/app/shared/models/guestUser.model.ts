@@ -150,8 +150,8 @@ export class Guest implements User {
           due_date: '2024-07-28',
           status: 'inProgress',
           related_task: [
-            { title: 'Draft initial concepts', done: false },
-            { title: 'Gather feedback from stakeholders', done: false },
+            { title: 'Draft initial concepts', checked: false },
+            { title: 'Gather feedback from stakeholders', checked: false },
           ],
         },
         {
@@ -186,8 +186,8 @@ export class Guest implements User {
           due_date: '2024-07-15',
           status: 'toDo',
           related_task: [
-            { title: 'Design database schema', done: false },
-            { title: 'Write backend code', done: false },
+            { title: 'Design database schema', checked: false },
+            { title: 'Write backend code', checked: false },
           ],
         },
         {
@@ -244,8 +244,8 @@ export class Guest implements User {
           due_date: '2024-08-20',
           status: 'awaitFeedback',
           related_task: [
-            { title: 'Conduct performance analysis', done: true },
-            { title: 'Implement optimizations', done: false },
+            { title: 'Conduct performance analysis', checked: true },
+            { title: 'Implement optimizations', checked: false },
           ],
         },
         {
@@ -279,8 +279,8 @@ export class Guest implements User {
           due_date: '2024-06-18',
           status: 'inProgress',
           related_task: [
-            { title: 'Design form layout', done: true },
-            { title: 'Implement form validation', done: false },
+            { title: 'Design form layout', checked: true },
+            { title: 'Implement form validation', checked: false },
           ],
         },
       ]);

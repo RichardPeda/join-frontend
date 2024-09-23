@@ -24,11 +24,11 @@ export class DialogDetailCardComponent {
   }
 
   /**
-   * Toggles the subtask status - done <=> undone
+   * Toggles the subtask status - checked <=> unchecked
    * @param index index of subtask
    */
   toggleSubtaskStatus(index: number) {
-    this.data.related_task[index].done = !this.data.related_task[index].done;
+    this.data.related_task[index].checked = !this.data.related_task[index].checked;
   }
 
   /**

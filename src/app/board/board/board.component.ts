@@ -349,7 +349,7 @@ export class BoardComponent {
    * Save the updated tasks in the database
    */
   updateTaskStatus(task:Task) {
-    this.sessionDataService.editTask(task).subscribe((data:any) =>{
+    this.sessionDataService.editTaskStatus(task).subscribe((data:any) =>{
       if (data) {
         this.sessionDataService._globalTasks.next(this.localTasks)
        

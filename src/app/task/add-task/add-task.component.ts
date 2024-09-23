@@ -57,20 +57,22 @@ import { PopupNotificationComponent } from '../../shared/modules/popup-notificat
 export class AddTaskComponent {
   _subscriptionUser: any;
   submitBtnClicked = false;
-  localUser: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [],
-    tasks: [],
-  };
+  // localUser: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [],
+  //   tasks: [],
+  // };
+
+  localContacts: Contact[] = [];
   status: 'toDo' | 'inProgress' | 'awaitFeedback' | 'done' = 'toDo';
 
   subtasks: string[] = [];
   hidePopup = true;
-  filteredContacts: Contact[];
+  filteredContacts: Contact[] = [];
   selectedContacts: Contact[] = [];
   subTasks: Subtask[] = [];
   notificationText = 'Task added to board';
@@ -101,25 +103,33 @@ export class AddTaskComponent {
     private sessionDataService: SessiondataService,
     @Optional() public dialogRef: MatDialogRef<AddTaskComponent>
   ) {
-    this.docId = this.userService.loadIdFromSessionStorage()!;
-    this.localUser = this.sessionDataService.user;
-    this.filteredContacts = this.localUser.contacts;
+    // this.docId = this.userService.loadIdFromSessionStorage()!;
+    // this.localUser = this.sessionDataService.user;
+    // this.filteredContacts = this.localUser.contacts;
   }
 
   ngOnInit() {
-    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-      (user: User) => {
-        this.localUser = user;
-        this.filteredContacts = this.localUser.contacts;
+    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
+    //   (user: User) => {
+    //     this.localUser = user;
+    //     this.filteredContacts = this.localUser.contacts;
+    //   }
+    // );
+
+    this.sessionDataService.getAllContacts().subscribe((data: any) => {
+      if (data) {
+        this.localContacts = data;
+        this.filteredContacts = data;
+        console.log(data);
       }
-    );
+    });
     this.status = this.sessionDataService.reqTaskStatus;
     this.taskForm.controls['subtask'].disable();
     this.getCurrentDate();
   }
 
   ngOnDestroy() {
-    this._subscriptionUser.unsubscribe();
+    // this._subscriptionUser.unsubscribe();
   }
 
   getCurrentDate() {
@@ -132,7 +142,7 @@ export class AddTaskComponent {
    */
   findselectedContacts() {
     this.selectedContacts = [];
-    this.localUser.contacts.forEach((c) => {
+    this.localContacts.forEach((c) => {
       if (c.selected) this.selectedContacts.push(c);
     });
   }
@@ -173,20 +183,38 @@ export class AddTaskComponent {
           category: this.taskForm.controls['category'].value!,
           due_date: this.taskForm.controls['date'].value!,
           status: this.status,
-          related_task: this.subTasks,
+          related_task: [], //this.subTasks,
         };
         newTasks.push(task);
         this.sessionDataService.reqTaskStatus = 'toDo';
-        // this.sessionDataService.editTask(task); //TODO Create Task
-        this.resetForm();
-        this.openSnackbar();
-        setTimeout(() => {
-          if (this.dialogRef) {
-            this.closeDialog();
-          }
+        console.log('create Task');
 
-          this.linkToBoard();
-        }, 3000);
+        this.sessionDataService.createTask(task).subscribe((data: any) => {
+          if (data) {
+            if (this.subTasks) {
+              let currentTask: Task = data;
+              if (currentTask.id) {
+                this.sessionDataService
+                  .createSubTask(currentTask.id, this.subTasks)
+                  .subscribe((data: any) => {
+                    if (data) {
+                      console.log(data);
+                    }
+                  });
+              }
+            }
+
+            this.resetForm();
+            this.openSnackbar();
+            setTimeout(() => {
+              if (this.dialogRef) {
+                this.closeDialog();
+              }
+
+              this.linkToBoard();
+            }, 3000);
+          }
+        });
       }
     }
   }
@@ -309,14 +337,14 @@ export class AddTaskComponent {
       this.taskForm.controls['contactField']?.value?.toLowerCase();
     if (compare && compare.length > 0) {
       this.filteredContacts = [];
-      this.localUser.contacts.forEach((contact) => {
+      this.localContacts.forEach((contact) => {
         let lowContactName = contact.name.toLowerCase();
         if (lowContactName.includes(compare)) {
           this.filteredContacts.push(contact);
         }
       });
     } else {
-      this.filteredContacts = this.localUser.contacts;
+      this.filteredContacts = this.localContacts;
     }
   }
 
@@ -327,7 +355,7 @@ export class AddTaskComponent {
     if (this.taskForm.controls['subtask'].value) {
       let subtask: Subtask = {
         title: this.taskForm.controls['subtask'].value,
-        done: false,
+        checked: false,
       };
       this.subTasks.push(subtask);
     }
@@ -382,7 +410,7 @@ export class AddTaskComponent {
    * Routerlink to the board page.
    */
   linkToBoard() {
-    this.router.navigate(['board/' + this.docId]);
+    this.router.navigate(['board/']);
   }
 
   /**

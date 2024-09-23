@@ -19,6 +19,7 @@ import { Task } from '../interfaces/task.interface';
 import { ContactsService } from './contacts.service';
 import { environment } from '../../environments/environment.development';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Subtask } from '../interfaces/subtask.interface';
 @Injectable({
   providedIn: 'root',
 })
@@ -143,7 +144,6 @@ export class SessiondataService {
 
   editContact(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-    console.log(url);
 
     let headers = new HttpHeaders();
     headers = headers.append(
@@ -153,6 +153,49 @@ export class SessiondataService {
     const options = { headers: headers };
 
     return this.http.put(url, contact, options);
+  }
+
+  createTask(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/create/';
+    console.log(url);
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+
+    return this.http.post(url, task, options);
+  }
+
+  /**
+   *
+   * @param task related task for subtask
+   * @param subtask subtask itself
+   * @returns Observable
+   */
+  createSubTask(taskID: string, subtask: Subtask[]) {
+    const url = environment.apiUrl + '/api/subtasks/create/';
+    console.log(url);
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+    let body = subtask.map((sub) => {
+      return {
+        title: sub.title,
+        rel_task: taskID,
+      };
+    });
+    console.log(body);
+
+    // const body = { title: subtask.title, rel_task: task };
+
+    return this.http.post(url, body, options);
   }
 
   async getData(id: string) {
@@ -167,6 +210,20 @@ export class SessiondataService {
     //   contacts: contact,
     // });
   }
+  editTaskStatus(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/status/';
+    console.log(url);
+
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    const options = { headers: headers };
+    const body = { status: task.status };
+
+    return this.http.put(url, body, options);
+  }
 
   editTask(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
@@ -180,10 +237,6 @@ export class SessiondataService {
     const options = { headers: headers };
 
     return this.http.put(url, task, options);
-    // let docRef = this.userService.getSingleDocRef('users', this.docId);
-    // await updateDoc(docRef, {
-    //   tasks: task,
-    // });
   }
 
   deleteContact(contact: Contact) {
