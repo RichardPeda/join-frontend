@@ -116,7 +116,14 @@ export class AddTaskComponent {
     //   }
     // );
 
-    this.sessionDataService.getAllContacts().subscribe((data: any) => {
+this.sessionDataService._globalContacts.subscribe((data:any) => {
+  if(data){
+    console.log('data from _globalcontacts', data);
+    
+  }
+})
+
+    this.sessionDataService.getAllContactsFromAPI().subscribe((data: any) => {
       if (data) {
         this.localContacts = data;
         this.filteredContacts = data;
@@ -189,7 +196,7 @@ export class AddTaskComponent {
         this.sessionDataService.reqTaskStatus = 'toDo';
         console.log('create Task');
 
-        this.sessionDataService.createTask(task).subscribe((data: any) => {
+        this.sessionDataService.createTaskAPI(task).subscribe((data: any) => {
           if (data) {
             if (this.subTasks) {
               let currentTask: Task = data;

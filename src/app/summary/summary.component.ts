@@ -83,9 +83,8 @@ export class SummaryComponent {
   }
 
   ngOnInit() {
-    this.sessionDataService.getAllTasks().subscribe((data) => {
-      if (data) console.log(data);
-    });
+    this.sessionDataService.loadTasks()
+   
     let username = localStorage.getItem('username')
     if (username) this.name = username
     //    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(

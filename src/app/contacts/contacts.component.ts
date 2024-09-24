@@ -98,31 +98,7 @@ export class ContactsComponent {
   ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
     this.checkMobile();
-    // this.sessionDataService.getAllContacts();
-    // this.sessionDataService._globalContacts.next('foo')
-    this.sessionDataService.getAllContacts().subscribe((data: any) => {
-      if (data) {
-        this.localContacts = data.map((data: any): Contact => {
-          return {
-            id: data.id,
-            email: data.email,
-            badge_color: data.badge_color,
-            initials: data.initials,
-            name: data.name,
-            phone: data.phone,
-            register: data.register,
-            selected: data.selected,
-          };
-        });
-        this.sessionDataService.waitForData = false;
-        if (this.localContacts) {
-          this.localContacts.sort(this.sessionDataService.compare);
-          this.getRegisterLetters(this.localContacts);
-          this.sessionDataService._globalContacts.next(this.localContacts);
-        }
-        this.sessionDataService.showContactDetails(this.localContacts[0]);
-      }
-    });
+    this.sessionDataService.loadContacts();
 
     this._subscripeContacts = this.sessionDataService._globalContacts.subscribe(
       (contacts: Contact[]) => {
@@ -173,26 +149,19 @@ export class ContactsComponent {
     this.checkMobile();
   }
 
-  newContact(contact: Contact) {
-    this.sessionDataService.createContact(contact).subscribe((result:any) =>
-     {
-      if(result){
-        this.localContacts.push(result)
-        this.sessionDataService._globalContacts.next(this.localContacts)
-      }
-     }
-    )
+ 
 
-  }
-  editContact(contact:Contact){
-    this.sessionDataService.editContact(contact).subscribe((result:any) =>
-      {
-       if(result){       
-         this.localContacts.splice(this.localContacts.findIndex(e => e.id === result.id),1,result);
-         this.sessionDataService._globalContacts.next(this.localContacts)
-       }
+  editContact(contact: Contact) {
+    this.sessionDataService.editContact(contact).subscribe((result: any) => {
+      if (result) {
+        this.localContacts.splice(
+          this.localContacts.findIndex((e) => e.id === result.id),
+          1,
+          result
+        );
+        this.sessionDataService._globalContacts.next(this.localContacts);
       }
-     )
+    });
   }
   /**
    * Check if the page is in mobile mode. Close details if not.

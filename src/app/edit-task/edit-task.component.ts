@@ -47,16 +47,8 @@ export class EditTaskComponent {
   };
 
   _subscriptionUser: any;
+  _subscripeContacts: any;
   submitBtnClicked = false;
-  // localUser: User = {
-  //   id: '',
-  //   name: '',
-  //   userinitials: '',
-  //   email: '',
-  //   password: '',
-  //   contacts: [],
-  //   tasks: [],
-  // };
   localContacts: Contact[] = [];
 
   subtasks: string[] = [];
@@ -95,29 +87,16 @@ export class EditTaskComponent {
   });
 
   ngOnInit() {
-    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-    //   (user: User) => {
-    //     this.localUser = user;
-    //   }
-    // );
-    this.sessionDataService.getAllContacts().subscribe((data: any) => {
-      if (data) {
-        this.localContacts = data.map((data: any): Contact => {
-          return {
-            id: data.id,
-            email: data.email,
-            badge_color: data.badge_color,
-            initials: data.initials,
-            name: data.name,
-            phone: data.phone,
-            register: data.register,
-            selected: data.selected,
-          };
-        });
-        this.sessionDataService._globalContacts.next(this.localContacts);
+   
+    this.sessionDataService.loadContacts();
+
+    this._subscripeContacts = this.sessionDataService._globalContacts.subscribe(
+      (contacts: Contact[]) => {
+        this.localContacts = contacts;
         this.joinContacts();
+       
       }
-    });
+    );
 
     this.priority = this.localTask.priority;
     this.subTasks = this.localTask.related_task;

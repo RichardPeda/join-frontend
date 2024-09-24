@@ -63,6 +63,8 @@ export class SessiondataService {
     '#FF4646',
     '#FFBB2B',
   ];
+  localTasks: Task[] = [];
+  localContacts: Task[] = [];
 
   fadeout: 'show' | 'hide' = 'show';
   reqTaskStatus: 'toDo' | 'inProgress' | 'awaitFeedback' | 'done' = 'toDo';
@@ -71,24 +73,69 @@ export class SessiondataService {
 
   unsubUser: any;
 
-  constructor(private userService: UserdataService, private http: HttpClient) {
-    // this.docId = this.userService.loadIdFromSessionStorage();
-    // this.unsubUser = onSnapshot(
-    //   this.userService.getSingleDocRef('users', this.docId),
-    //   (doc) => {
-    //     let data = doc.data();
-    //     this.user = this.userService.getCurrentUserData(doc.id, data!);
-    //     this.userSubject.next(this.user);
-    //     if (this.user) {
-    //       this.initials.next(this.getInitials(this.user.name));
-    //       this.username.next(this.user.name);
-    //       if (this.selectedContact && this.selectedContact.name === '') {
-    //         this.getFirstContact(this.user.contacts);
-    //         this._selectedContact.next(this.selectedContact);
-    //       }
-    //     }
-    //   }
-    // );
+  constructor(private userService: UserdataService, private http: HttpClient) {}
+
+  loadContacts() {
+    this.getAllContactsFromAPI().subscribe((data: any) => {
+      if (data) {
+        this.localContacts = data.map((data: any): Contact => {
+          return {
+            id: data.id,
+            email: data.email,
+            badge_color: data.badge_color,
+            initials: data.initials,
+            name: data.name,
+            phone: data.phone,
+            register: data.register,
+            selected: data.selected,
+          };
+        });
+        if (this.localContacts) this._globalContacts.next(this.localContacts);
+      }
+    });
+  }
+
+  loadTasks() {
+    this.getAllTasksFromAPI().subscribe((data: any) => {
+      if (data) {
+        this.localTasks = data.map((data: any): Task => {
+          return {
+            id: data.id,
+            category: data.category,
+            description: data.description,
+            due_date: data.due_date,
+            priority: data.priority,
+            status: data.status,
+            title: data.title,
+            related_task: data.related_task,
+            contacts: data.contacts,
+          };
+        });
+        this._globalTasks.next(this.localTasks);
+      }
+    });
+  }
+
+  createNewContact(contact: Contact) {
+    this.createContactAPI(contact).subscribe((result: any) => {
+      if (result) {
+        this.localContacts.push(result);
+        this._globalContacts.next(this.localContacts);
+      }
+    });
+  }
+  deleteContact(contact: Contact) {
+    this.deleteContactAPI(contact).subscribe((response: any) => {
+      if (response) {
+        if (response.status == 204) {
+          let index = this.localContacts.findIndex(
+            (element) => element.id == contact.id
+          );
+          if (index > -1) this.localContacts.splice(index, 1);
+          this._globalContacts.next(this.localContacts);
+        }
+      }
+    });
   }
 
   getUserInfo() {
@@ -101,20 +148,19 @@ export class SessiondataService {
     this.unsubUser();
   }
 
-  getAllTasks() {
+  getAllTasksFromAPI() {
     const url = environment.apiUrl + '/api/taskitems/';
     let headers = new HttpHeaders();
     headers = headers.append(
       'Authorization',
       'Token ' + localStorage.getItem('token')
     );
-
     return this.http.get(url, {
       headers: headers,
     });
   }
 
-  getAllContacts() {
+  getAllContactsFromAPI() {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/';
     let headers = new HttpHeaders();
@@ -122,13 +168,12 @@ export class SessiondataService {
       'Authorization',
       'Token ' + localStorage.getItem('token')
     );
-
     return this.http.get(url, {
       headers: headers,
     });
   }
 
-  createContact(newContact: Contact) {
+  createContactAPI(newContact: Contact) {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/create/';
 
@@ -144,18 +189,28 @@ export class SessiondataService {
 
   editContact(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-
     let headers = new HttpHeaders();
     headers = headers.append(
       'Authorization',
       'Token ' + localStorage.getItem('token')
     );
     const options = { headers: headers };
-
     return this.http.put(url, contact, options);
   }
 
-  createTask(task: Task) {
+  deleteContactAPI(contact: Contact) {
+    const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
+    let headers = new HttpHeaders();
+    headers = headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+
+    // const options = { headers: headers };
+    return this.http.delete(url, { headers: headers, observe: 'response' });
+  }
+
+  createTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/create/';
     console.log(url);
 
@@ -239,21 +294,21 @@ export class SessiondataService {
     return this.http.put(url, task, options);
   }
 
-  deleteContact(contact: Contact) {
-    let update = false;
-    let newContacts: Contact[] = this.user.contacts;
-    newContacts.forEach((newContact, index) => {
-      if (newContact.id === contact.id) {
-        newContacts.splice(index, 1);
-        update = true;
-      }
-    });
-    if (update) this.setContact(newContacts);
-    update = false;
-    this.showOtherContact();
-    this._contactDeleted.next(true);
-    this._contactDeleted.next(false);
-  }
+  // deleteContact(contact: Contact) {
+  //   let update = false;
+  //   let newContacts: Contact[] = this.user.contacts;
+  //   newContacts.forEach((newContact, index) => {
+  //     if (newContact.id === contact.id) {
+  //       newContacts.splice(index, 1);
+  //       update = true;
+  //     }
+  //   });
+  //   if (update) this.setContact(newContacts);
+  //   update = false;
+  //   this.showOtherContact();
+  //   this._contactDeleted.next(true);
+  //   this._contactDeleted.next(false);
+  // }
 
   getInitials(name: string) {
     let splitName = name.split(' ', 2);

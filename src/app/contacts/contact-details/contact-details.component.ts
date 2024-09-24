@@ -79,6 +79,8 @@ export class ContactDetailsComponent {
     if (this.showDialog && !this.cooldown) this.showDialog = false;
   }
 
+  
+
   /**
    * Select the first contact of the list to fill the details component.
    */
