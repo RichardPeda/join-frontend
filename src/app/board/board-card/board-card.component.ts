@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { Task } from '../../interfaces/task.interface';
 import { Contact } from '../../interfaces/contact.interface';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
@@ -34,13 +40,21 @@ export class BoardCardComponent {
     related_task: [],
   };
 
+  @Input() detectChange: boolean = false;
+
   @Output() setTask = new EventEmitter<Task>();
   @Output() clicked = new EventEmitter<boolean>();
 
   openCard = false;
   openMenu = false;
 
+  changes = false;
+
   constructor(private dialog: MatDialog) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.changes = !this.changes;
+  }
 
   /**
    * Emit to parent when card is clicked to open the detail card dialog.

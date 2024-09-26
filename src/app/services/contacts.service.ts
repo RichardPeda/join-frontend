@@ -158,16 +158,16 @@ export class ContactsService {
 
   
 
-  selectContact(id: string) {
-    let contactArray = this.sessionService.user.contacts;
-    contactArray.sort(this.sessionService.compare);
-    contactArray.forEach((contact) => {
-      if (contact.id === id) {
-        this.selectedContact = contact;
-        this._selectedContact.next(this.selectedContact);
-      }
-    });
-  }
+  // selectContact(id: string) {
+  //   let contactArray = this.sessionService.user.contacts;
+  //   contactArray.sort(this.sessionService.compare);
+  //   contactArray.forEach((contact) => {
+  //     if (contact.id === id) {
+  //       this.selectedContact = contact;
+  //       this._selectedContact.next(this.selectedContact);
+  //     }
+  //   });
+  // }
 
   
 

@@ -22,16 +22,17 @@ import { Router } from '@angular/router';
   styleUrl: './summary.component.scss',
 })
 export class SummaryComponent {
-  _subscriptionUser: any;
-  localUser: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [],
-    tasks: [],
-  };
+  _subscriptionTask: any;
+  // localUser: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [],
+  //   tasks: [],
+  // };
+  localTasks: Task[] = [];
   setImg = false;
   name = '';
   greeting = 'Hello';
@@ -83,32 +84,32 @@ export class SummaryComponent {
   }
 
   ngOnInit() {
-    this.sessionDataService.loadTasks()
+    this.sessionDataService.loadTasks();
+    this._subscriptionTask = this.sessionDataService._globalTasks.subscribe(
+      (data: any) => {
+        if (data) this.localTasks = data;
    
-    let username = localStorage.getItem('username')
-    if (username) this.name = username
-    //    this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-    //   (user: User) => {
-    //     this.localUser = user;
-    //     this.greeting = this.greetingDay(this.localUser.name);
-    //     this.name = this.localUser.name;
+        this.nrOfTasks.forEach((element) => {
+          element.amount = this.countTasksOfStatus(element.status);
+        });
+        this.nrTasksInBoard = this.countAllTasks();
+        this.getHighestPriority();
+        this.deadline = this.getDeadline();
+      }
+    );
 
-    //     if (user) {
-    //       this.nrOfTasks.forEach((element) => {
-    //         element.amount = this.countTasksOfStatus(element.status);
-    //       });
-    //       this.nrTasksInBoard = this.countAllTasks();
-    //       this.getHighestPriority();
-    //       this.deadline = this.getDeadline();
-    //     }
-    //   }
-    // );
+    let username = localStorage.getItem('username');
+    if (username) {
+      this.name = username;
+      this.greeting = this.greetingDay(username);
+    }
+
     this.checkMobile();
     this.mobileGreeting();
   }
 
   ngOnDestroy() {
-    // this._subscriptionUser.unsubscribe();
+    this._subscriptionTask.unsubscribe();
   }
 
   /**
@@ -174,8 +175,8 @@ export class SummaryComponent {
    */
   countTasksOfStatus(status: string): number {
     let num = 0;
-    if (this.localUser.tasks) {
-      this.localUser.tasks.forEach((task) => {
+    if (this.localTasks) {
+      this.localTasks.forEach((task) => {
         if (task.status === status) num++;
       });
     }
@@ -188,8 +189,8 @@ export class SummaryComponent {
    */
   countAllTasks(): number {
     let num = 0;
-    if (this.localUser.tasks) {
-      this.localUser.tasks.forEach((task) => {
+    if (this.localTasks) {
+      this.localTasks.forEach((task) => {
         num++;
       });
     }
@@ -200,8 +201,9 @@ export class SummaryComponent {
    * Search all task for highest Priority
    */
   getHighestPriority() {
-    if (this.localUser.tasks) {
-      this.localUser.tasks.forEach((task) => {
+    if (this.localTasks) {
+      this.taskHighestPriorityArray = [];
+      this.localTasks.forEach((task) => {
         if (task.priority === 'urgent') {
           this.taskHighestPriorityArray.push(task);
         }

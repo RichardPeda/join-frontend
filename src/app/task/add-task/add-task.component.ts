@@ -116,12 +116,11 @@ export class AddTaskComponent {
     //   }
     // );
 
-this.sessionDataService._globalContacts.subscribe((data:any) => {
-  if(data){
-    console.log('data from _globalcontacts', data);
-    
-  }
-})
+    this.sessionDataService._globalContacts.subscribe((data: any) => {
+      if (data) {
+        console.log('data from _globalcontacts', data);
+      }
+    });
 
     this.sessionDataService.getAllContactsFromAPI().subscribe((data: any) => {
       if (data) {
@@ -174,7 +173,7 @@ this.sessionDataService._globalContacts.subscribe((data:any) => {
   createTask() {
     if (this.taskForm.valid) {
       this.findselectedContacts();
-      let newTasks = this.sessionDataService.user.tasks;
+      // let newTasks = this.sessionDataService.user.tasks;
 
       if (
         (this.taskForm.controls['category'].value === 'User Story' ||
@@ -192,36 +191,21 @@ this.sessionDataService._globalContacts.subscribe((data:any) => {
           status: this.status,
           related_task: [], //this.subTasks,
         };
-        newTasks.push(task);
+        // newTasks.push(task);
         this.sessionDataService.reqTaskStatus = 'toDo';
         console.log('create Task');
 
-        this.sessionDataService.createTaskAPI(task).subscribe((data: any) => {
-          if (data) {
-            if (this.subTasks) {
-              let currentTask: Task = data;
-              if (currentTask.id) {
-                this.sessionDataService
-                  .createSubTask(currentTask.id, this.subTasks)
-                  .subscribe((data: any) => {
-                    if (data) {
-                      console.log(data);
-                    }
-                  });
-              }
-            }
+        this.sessionDataService.createTask(task, this.subTasks);
 
-            this.resetForm();
-            this.openSnackbar();
-            setTimeout(() => {
-              if (this.dialogRef) {
-                this.closeDialog();
-              }
-
-              this.linkToBoard();
-            }, 3000);
+        this.resetForm();
+        this.openSnackbar();
+        setTimeout(() => {
+          if (this.dialogRef) {
+            this.closeDialog();
           }
-        });
+
+          this.linkToBoard();
+        }, 3000);
       }
     }
   }

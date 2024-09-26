@@ -27,15 +27,15 @@ export class SessiondataService {
   docId = '';
   unsubGuest: any;
   firestore: Firestore = inject(Firestore);
-  user: User = {
-    id: '',
-    name: '',
-    userinitials: '',
-    email: '',
-    password: '',
-    contacts: [],
-    tasks: [],
-  };
+  // user: User = {
+  //   id: '',
+  //   name: '',
+  //   userinitials: '',
+  //   email: '',
+  //   password: '',
+  //   contacts: [],
+  //   tasks: [],
+  // };
   userSubject: BehaviorSubject<any> = new BehaviorSubject({});
   public _selectedContact: BehaviorSubject<any> = new BehaviorSubject({});
   public _contactDeleted: BehaviorSubject<any> = new BehaviorSubject(false);
@@ -64,7 +64,7 @@ export class SessiondataService {
     '#FFBB2B',
   ];
   localTasks: Task[] = [];
-  localContacts: Task[] = [];
+  localContacts: Contact[] = [];
 
   fadeout: 'show' | 'hide' = 'show';
   reqTaskStatus: 'toDo' | 'inProgress' | 'awaitFeedback' | 'done' = 'toDo';
@@ -73,8 +73,19 @@ export class SessiondataService {
 
   unsubUser: any;
 
-  constructor(private userService: UserdataService, private http: HttpClient) {}
+  headers = new HttpHeaders();
+  
 
+  constructor(private userService: UserdataService, private http: HttpClient) {
+    this.headers = this.headers.append(
+      'Authorization',
+      'Token ' + localStorage.getItem('token')
+    );
+    console.log(this.headers);
+    
+  }
+
+  //CONTACTS
   loadContacts() {
     this.getAllContactsFromAPI().subscribe((data: any) => {
       if (data) {
@@ -95,6 +106,67 @@ export class SessiondataService {
     });
   }
 
+  getAllContactsFromAPI() {
+    this.loadingDataScreen();
+    const url = environment.apiUrl + '/api/contacts/';
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    return this.http.get(url, {
+      headers: this.headers,
+    });
+  }
+
+  createNewContact(contact: Contact) {
+    this.createContactAPI(contact).subscribe((result: any) => {
+      if (result) {
+        this.localContacts.push(result);
+        this._globalContacts.next(this.localContacts);
+      }
+    });
+  }
+
+  createContactAPI(newContact: Contact) {
+    this.loadingDataScreen();
+    const url = environment.apiUrl + '/api/contacts/create/';
+
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+
+    return this.http.post(url, newContact, options);
+  }
+
+  deleteContact(contact: Contact) {
+    this.deleteContactAPI(contact).subscribe((response: any) => {
+      if (response) {
+        if (response.status == 204) {
+          let index = this.localContacts.findIndex(
+            (element) => element.id == contact.id
+          );
+          if (index > -1) this.localContacts.splice(index, 1);
+          this._globalContacts.next(this.localContacts);
+        }
+      }
+    });
+  }
+
+  deleteContactAPI(contact: Contact) {
+    const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    return this.http.delete(url, { headers: this.headers, observe: 'response' });
+  }
+
+  //TASKS
   loadTasks() {
     this.getAllTasksFromAPI().subscribe((data: any) => {
       if (data) {
@@ -116,26 +188,160 @@ export class SessiondataService {
     });
   }
 
-  createNewContact(contact: Contact) {
-    this.createContactAPI(contact).subscribe((result: any) => {
-      if (result) {
-        this.localContacts.push(result);
-        this._globalContacts.next(this.localContacts);
-      }
+  getAllTasksFromAPI() {
+    const url = environment.apiUrl + '/api/taskitems/';
+    let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    return this.http.get(url, {
+      headers: this.headers,
     });
   }
-  deleteContact(contact: Contact) {
-    this.deleteContactAPI(contact).subscribe((response: any) => {
-      if (response) {
-        if (response.status == 204) {
-          let index = this.localContacts.findIndex(
-            (element) => element.id == contact.id
-          );
-          if (index > -1) this.localContacts.splice(index, 1);
-          this._globalContacts.next(this.localContacts);
+
+  createTask(task: Task, subtasks: Subtask[]) {
+    this.createTaskAPI(task).subscribe((data: any) => {
+      if (data) {
+        if (subtasks) {
+          let currentTask: Task = data;
+          if (currentTask.id) {
+            this.createSubTaskAPI(currentTask.id, subtasks).subscribe(
+              (data: any) => {
+                if (data) {
+                  console.log(data);
+                }
+              }
+            );
+          }
         }
       }
     });
+  }
+
+  createTaskAPI(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/create/';
+    console.log(url);
+
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+
+    return this.http.post(url, task, options);
+  }
+
+  deleteTask(task: Task) {
+    this.deleteTaskAPI(task).subscribe((response: any) => {
+      if (response) {
+        if (response.status == 204) {
+          let index = this.localTasks.findIndex(
+            (element) => element.id == task.id
+          );
+          if (index > -1) this.localTasks.splice(index, 1);
+          this._globalTasks.next(this.localTasks);
+        }
+      }
+    });
+  }
+
+  deleteTaskAPI(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    return this.http.delete(url, { headers: this.headers, observe: 'response' });
+  }
+
+  editTask(index: number, taskToEdit: Task) {
+    this.editTaskAPI(taskToEdit).subscribe((data: any) => {
+      if (data) {
+        this.localTasks.splice(index, 1, taskToEdit);
+        this._globalTasks.next(this.localTasks);
+      }
+    });
+  }
+
+  editTaskAPI(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+
+    return this.http.put(url, task, options);
+  }
+
+  updateTaskStatus(index: number, task: Task) {
+    this.editTaskStatusAPI(task).subscribe((data: any) => {
+      if (data) {
+        this.localTasks.splice(index, 1, task);
+        this._globalTasks.next(this.localTasks);
+      }
+    });
+  }
+
+  editTaskStatusAPI(task: Task) {
+    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/status/';
+    console.log(url);
+
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+    const body = { status: task.status };
+
+    return this.http.put(url, body, options);
+  }
+
+  //SUBTASKS
+  changeSubtaskChecked(id: string, subtask: Subtask) {
+    this.changeSubtaskCheckedAPI(subtask).subscribe((data: any) => {
+      if (data) {
+        this._globalTasks.next(this.localTasks);
+      }
+    });
+  }
+
+  changeSubtaskCheckedAPI(subtask: Subtask) {
+    const url =
+      environment.apiUrl + '/api/subtasks/' + subtask.id + '/checked/';
+
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+    const body = { checked: subtask.checked };
+
+    return this.http.put(url, body, options);
+  }
+
+  createSubTaskAPI(taskID: string, subtask: Subtask[]) {
+    const url = environment.apiUrl + '/api/subtasks/create/';
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
+    let body = subtask.map((sub) => {
+      return {
+        title: sub.title,
+        rel_task: taskID,
+      };
+    });
+    console.log(body);
+    return this.http.post(url, body, options);
   }
 
   getUserInfo() {
@@ -148,80 +354,15 @@ export class SessiondataService {
     this.unsubUser();
   }
 
-  getAllTasksFromAPI() {
-    const url = environment.apiUrl + '/api/taskitems/';
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    return this.http.get(url, {
-      headers: headers,
-    });
-  }
-
-  getAllContactsFromAPI() {
-    this.loadingDataScreen();
-    const url = environment.apiUrl + '/api/contacts/';
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    return this.http.get(url, {
-      headers: headers,
-    });
-  }
-
-  createContactAPI(newContact: Contact) {
-    this.loadingDataScreen();
-    const url = environment.apiUrl + '/api/contacts/create/';
-
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
-
-    return this.http.post(url, newContact, options);
-  }
-
-  editContact(contact: Contact) {
+  editContactAPI(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
+    // let headers = new HttpHeaders();
+    // headers = headers.append(
+    //   'Authorization',
+    //   'Token ' + localStorage.getItem('token')
+    // );
+    const options = { headers: this.headers };
     return this.http.put(url, contact, options);
-  }
-
-  deleteContactAPI(contact: Contact) {
-    const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-
-    // const options = { headers: headers };
-    return this.http.delete(url, { headers: headers, observe: 'response' });
-  }
-
-  createTaskAPI(task: Task) {
-    const url = environment.apiUrl + '/api/taskitems/create/';
-    console.log(url);
-
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
-
-    return this.http.post(url, task, options);
   }
 
   /**
@@ -230,85 +371,6 @@ export class SessiondataService {
    * @param subtask subtask itself
    * @returns Observable
    */
-  createSubTask(taskID: string, subtask: Subtask[]) {
-    const url = environment.apiUrl + '/api/subtasks/create/';
-    console.log(url);
-
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
-    let body = subtask.map((sub) => {
-      return {
-        title: sub.title,
-        rel_task: taskID,
-      };
-    });
-    console.log(body);
-
-    // const body = { title: subtask.title, rel_task: task };
-
-    return this.http.post(url, body, options);
-  }
-
-  async getData(id: string) {
-    // let docRef = this.userService.getSingleDocRef('users', this.docId);
-    // const docSnap = await getDoc(docRef);
-    // return docSnap.data();
-  }
-
-  async setContact(contact: Contact[]) {
-    // let docRef = this.userService.getSingleDocRef('users', this.docId);
-    // await updateDoc(docRef, {
-    //   contacts: contact,
-    // });
-  }
-  editTaskStatus(task: Task) {
-    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/status/';
-    console.log(url);
-
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
-    const body = { status: task.status };
-
-    return this.http.put(url, body, options);
-  }
-
-  editTask(task: Task) {
-    const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
-    console.log(url);
-
-    let headers = new HttpHeaders();
-    headers = headers.append(
-      'Authorization',
-      'Token ' + localStorage.getItem('token')
-    );
-    const options = { headers: headers };
-
-    return this.http.put(url, task, options);
-  }
-
-  // deleteContact(contact: Contact) {
-  //   let update = false;
-  //   let newContacts: Contact[] = this.user.contacts;
-  //   newContacts.forEach((newContact, index) => {
-  //     if (newContact.id === contact.id) {
-  //       newContacts.splice(index, 1);
-  //       update = true;
-  //     }
-  //   });
-  //   if (update) this.setContact(newContacts);
-  //   update = false;
-  //   this.showOtherContact();
-  //   this._contactDeleted.next(true);
-  //   this._contactDeleted.next(false);
-  // }
 
   getInitials(name: string) {
     let splitName = name.split(' ', 2);
@@ -370,7 +432,7 @@ export class SessiondataService {
   }
 
   showOtherContact() {
-    let contactArray = this.user.contacts;
+    let contactArray = this.localContacts;
     contactArray.sort(this.compare);
     if (contactArray.length > 0) {
       this.selectedContact = contactArray[0];

@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
 import { Subtask } from '../../interfaces/subtask.interface';
 import { CommonModule } from '@angular/common';
 
@@ -17,11 +17,14 @@ export class ProgressBarComponent {
     },
   ];
 
+  @Input() detectChanges : boolean = false
+
   finishedSubtasks: number = 0;
   totalSubtasks: number = 0;
   progress: number = 0;
 
-  ngOnChanges(changes: SimpleChange) {
+  ngOnChanges(changes :SimpleChanges) {
+       
     this.calcSubtasks();
   }
   ngOnInit() {

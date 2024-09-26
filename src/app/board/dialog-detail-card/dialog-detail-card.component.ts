@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Task } from '../../interfaces/task.interface';
 import { PriorityBadgeComponent } from '../priority-badge/priority-badge.component';
 import { CommonModule } from '@angular/common';
+import { SessiondataService } from '../../services/sessiondata.service';
 
 @Component({
   selector: 'app-dialog-detail-card',
@@ -18,17 +19,25 @@ export class DialogDetailCardComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Task,
-    public dialogRef: MatDialogRef<DialogDetailCardComponent>
+    public dialogRef: MatDialogRef<DialogDetailCardComponent>,
+    public sessionDataService: SessiondataService
   ) {
     this.localData = { ...data };
   }
 
   /**
-   * Toggles the subtask status - checked <=> unchecked
+   * Toggles the subtask status - checked <=> unchecked and save to backend
    * @param index index of subtask
    */
   toggleSubtaskStatus(index: number) {
-    this.data.related_task[index].checked = !this.data.related_task[index].checked;
+    this.data.related_task[index].checked =
+      !this.data.related_task[index].checked;
+
+    if (this.data.id)
+      this.sessionDataService.changeSubtaskChecked(
+        this.data.id,
+        this.data.related_task[index]
+      );
   }
 
   /**

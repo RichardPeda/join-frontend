@@ -94,6 +94,8 @@ export class BoardComponent {
     this.docId = this.userService.loadIdFromSessionStorage()!;
   }
 
+  changes = false
+
   async ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
     this.checkMobile();
@@ -102,7 +104,8 @@ export class BoardComponent {
 
     this._subscripeTasks = this.sessionDataService._globalTasks.subscribe(
       (task: Task[]) => {
-        this.localTasks = task;      
+        this.localTasks = task;
+        this.changes = !this.changes;
         this.countTaskStatus();
       }
     );
@@ -128,6 +131,9 @@ export class BoardComponent {
    */
   openDetailDialog(event: MouseEvent, index: number) {
     event.preventDefault();
+    let oldData = this.localTasks[index].related_task.map(x => x) 
+    console.log(oldData);
+    
     const dialogRef = this.dialog.open(DialogDetailCardComponent, {
       minWidth: 'min(400px, 100%)',
       maxHeight: '100%',
@@ -137,9 +143,17 @@ export class BoardComponent {
     this._subscriptionDialog = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.event == 'editmode') {
         this.openEditDialog(index);
-      } else if (result && result.event == 'delete')
-        this.localTasks.splice(index, 1);
-      this.sessionDataService.editTask(this.localTasks[index]);
+      } else if (result && result.event == 'delete') {
+        console.log(index);
+        this.sessionDataService.deleteTask(this.localTasks[index]);
+      } else if (result && result.event == 'update') {
+        console.log(result.event);
+      }
+      if(!result){
+        
+      }
+    
+      
     });
   }
 
@@ -158,16 +172,7 @@ export class BoardComponent {
       .afterClosed()
       .subscribe((result) => {
         if (result && result.event == 'update') {
-          console.log(result.data);
-
-          this.localTasks.splice(index, 1, result.data);
-          this.sessionDataService
-            .editTask(this.localTasks[index])
-            .subscribe((data: any) => {
-              if (data) {
-                this.sessionDataService._globalTasks.next(this.localTasks);
-              }
-            });
+          this.sessionDataService.editTask(index, result.data);
         }
       });
   }
@@ -273,7 +278,7 @@ export class BoardComponent {
     this.rotateValue = 0;
 
     if (event.previousContainer !== event.container) {
-      this.localTasks.forEach((task) => {
+      this.localTasks.forEach((task, index) => {
         if (task == this.dragableTask) {
           if (
             column == 'toDo' ||
@@ -282,7 +287,8 @@ export class BoardComponent {
             column == 'done'
           ) {
             task.status = column;
-            this.updateTaskStatus(task);
+            this.sessionDataService.updateTaskStatus(index, task);
+
             this.countTaskStatus();
           }
         }
@@ -322,13 +328,14 @@ export class BoardComponent {
   /**
    * Save the updated tasks in the database
    */
-  updateTaskStatus(task: Task) {
-    this.sessionDataService.editTaskStatus(task).subscribe((data: any) => {
-      if (data) {
-        this.sessionDataService._globalTasks.next(this.localTasks);
-      }
-    });
-  }
+
+  // updateTaskStatus(task: Task) {
+  //   this.sessionDataService.editTaskStatus(task).subscribe((data: any) => {
+  //     if (data) {
+  //       this.sessionDataService._globalTasks.next(this.localTasks);
+  //     }
+  //   });
+  // }
 
   /**
    * Filter the tasks when the input field is filled. If a task title or description is found, push the taskId to an array.

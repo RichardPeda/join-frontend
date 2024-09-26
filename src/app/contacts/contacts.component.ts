@@ -92,7 +92,7 @@ export class ContactsComponent {
     public activatedroute: ActivatedRoute,
     private ref: ChangeDetectorRef
   ) {
-    this.sessionDataService.user.contacts.sort(this.sessionDataService.compare);
+    // this.sessionDataService.user.contacts.sort(this.sessionDataService.compare);
   }
 
   ngOnInit() {
@@ -152,7 +152,7 @@ export class ContactsComponent {
  
 
   editContact(contact: Contact) {
-    this.sessionDataService.editContact(contact).subscribe((result: any) => {
+    this.sessionDataService.editContactAPI(contact).subscribe((result: any) => {
       if (result) {
         this.localContacts.splice(
           this.localContacts.findIndex((e) => e.id === result.id),
