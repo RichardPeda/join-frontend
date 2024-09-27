@@ -11,25 +11,12 @@ import { LogoAnimationComponent } from '../logo-animation/logo-animation.compone
 import { UserdataService } from '../services/userdata.service';
 import { RouterModule, Router } from '@angular/router';
 import { Guest } from '../shared/models/guestUser.model';
-import {
-  Firestore,
-  collectionData,
-  collection,
-  doc,
-  onSnapshot,
-  addDoc,
-  QuerySnapshot,
-  DocumentData,
-  getDoc,
-  query,
-  getDocs,
-  where,
-} from '@angular/fire/firestore';
 import { LogoAnimationMobileComponent } from '../logo-animation-mobile/logo-animation-mobile.component';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
 import { environment } from '../../environments/environment.development';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
+import { SessiondataService } from '../services/sessiondata.service';
 
 @Component({
   selector: 'app-login',
@@ -53,7 +40,6 @@ export class LoginComponent {
   userform: FormGroup;
   mobileMode = false;
   savedUsers = [];
-  firestore: Firestore = inject(Firestore);
   currentEmail: string | null | undefined = undefined;
   currentPassword: string | null | undefined = undefined;
   showNotification = false;
@@ -61,6 +47,7 @@ export class LoginComponent {
 
   constructor(
     public userService: UserdataService,
+    private sessionDataService : SessiondataService,
     private router: Router,
     private location: Location,
     private http: HttpClient
@@ -69,6 +56,7 @@ export class LoginComponent {
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
     });
+    this.sessionDataService.clearGuestUser()
   }
 
   ngOnInit() {
@@ -113,6 +101,7 @@ export class LoginComponent {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.name)
         this.router.navigate(['summary']);
+        this.rememberMe(email, password);
       },
       (error) => {
         if (error.status == 400) {
@@ -125,25 +114,6 @@ export class LoginComponent {
       console.error(e);
     }
 
-    // const q = query(
-    //   collection(this.firestore, 'users'),
-    //   where('email', '==', email),
-    //   where('password', '==', password)
-    // );
-    // let docId = undefined;
-    // let data;
-
-    // let snapshot = await getDocs(q);
-    // snapshot.forEach((doc) => {
-    //   docId = doc.id;
-    //   data = doc.data();
-    // });
-
-    // if (docId) {
-    //   this.router.navigate(['summary/' + docId]);
-    //   this.userService.saveIdInSessionStorage(docId);
-    //   this.rememberMe(email, password);
-    // } else this.wrongLogin();
   }
   loginWithEmailAndPassword(email: string, password: string) {
     const url = environment.apiUrl + '/api/login/';
@@ -153,6 +123,7 @@ export class LoginComponent {
     };
     return lastValueFrom<any>(this.http.post(url, body));
   }
+
   /**
    * User not found in database, cannot be logged in. Show notification.
    */
@@ -176,17 +147,48 @@ export class LoginComponent {
    * Login as guest user. Creates a new instance in database and redirect to summary.
    */
   async addNewGuestUser() {
-    let guest = new Guest('guest', 'demo@mail.com', 'G', '123456');
-    guest.userinitials = 'G';
-
-    const docRef = await addDoc(
-      this.userService.getUserRef(),
-      guest.toJSON()
-    ).then((docInfo) => {
-      this.router.navigate(['summary/' + docInfo.id]);
-      this.userService.saveIdInSessionStorage(docInfo.id);
-      this.userService.saveDataInSessionStorage('name', 'guest');
-    });
+    // let guest = new Guest('guest3164641646', 'demo@mail.com', 'G', '123456');
+    let name = 'guest'
+    let email = 'demo123456@mail.com'
+    let password = '123456'
+    // guest.userinitials = 'G';
+    try {
+      let resp = await this.sessionDataService.registerNewUserAPI(
+        email,
+        password,
+        name
+      );
+      if (resp){
+        console.log(resp);
+        
+        this.loginWithEmailAndPassword(email, password).then(
+          (data) => {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('username', data.name)
+            this.router.navigate(['summary']);
+            this.rememberMe(email, password);
+          },
+          (error) => {
+            if (error.status == 400) {
+              this.wrongLogin();
+            }
+          }
+        );
+      };
+      
+     
+    } catch (e) {
+    
+    }
+   
+    // const docRef = await addDoc(
+    //   this.userService.getUserRef(),
+    //   guest.toJSON()
+    // ).then((docInfo) => {
+    //   this.router.navigate(['summary/' + docInfo.id]);
+    //   this.userService.saveIdInSessionStorage(docInfo.id);
+    //   this.userService.saveDataInSessionStorage('name', 'guest');
+    // });
   }
 
   @HostListener('window:resize', ['$event'])

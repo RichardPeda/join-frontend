@@ -1,22 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { UserdataService } from './userdata.service';
-import {
-  Firestore,
-  collectionData,
-  collection,
-  doc,
-  onSnapshot,
-  addDoc,
-  QuerySnapshot,
-  DocumentData,
-  getDoc,
-  updateDoc,
-} from '@angular/fire/firestore';
 import { User } from '../interfaces/user.interface';
 import { Contact } from '../interfaces/contact.interface';
-import { AsyncSubject, BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Subject } from 'rxjs';
 import { Task } from '../interfaces/task.interface';
-import { ContactsService } from './contacts.service';
 import { environment } from '../../environments/environment.development';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subtask } from '../interfaces/subtask.interface';
@@ -26,16 +13,7 @@ import { Subtask } from '../interfaces/subtask.interface';
 export class SessiondataService {
   docId = '';
   unsubGuest: any;
-  firestore: Firestore = inject(Firestore);
-  // user: User = {
-  //   id: '',
-  //   name: '',
-  //   userinitials: '',
-  //   email: '',
-  //   password: '',
-  //   contacts: [],
-  //   tasks: [],
-  // };
+
   userSubject: BehaviorSubject<any> = new BehaviorSubject({});
   public _selectedContact: BehaviorSubject<any> = new BehaviorSubject({});
   public _contactDeleted: BehaviorSubject<any> = new BehaviorSubject(false);
@@ -74,7 +52,6 @@ export class SessiondataService {
   unsubUser: any;
 
   headers = new HttpHeaders();
-  
 
   constructor(private userService: UserdataService, private http: HttpClient) {
     this.headers = this.headers.append(
@@ -82,13 +59,39 @@ export class SessiondataService {
       'Token ' + localStorage.getItem('token')
     );
     console.log(this.headers);
-    
+  }
+
+  //CLEAR GUEST
+  clearGuestUser() {
+    let name = 'guest';
+    let email = 'demo123456@mail.com';
+    let password = '123456';
+    const url = environment.apiUrl + '/api/guestdelete/';
+    const body = {
+      email: email,
+      password: password,
+      name: name,
+    };
+    return lastValueFrom(this.http.post(url, body));
+  }
+
+  //REGISTER
+  registerNewUserAPI(email: string, password: string, name: string) {
+    const url = environment.apiUrl + '/api/signup/';
+    const body = {
+      email: email,
+      password: password,
+      name: name,
+    };
+    return lastValueFrom(this.http.post(url, body));
   }
 
   //CONTACTS
   loadContacts() {
+    this.loadingDataScreen();
     this.getAllContactsFromAPI().subscribe((data: any) => {
       if (data) {
+        this.waitForData = false;
         this.localContacts = data.map((data: any): Contact => {
           return {
             id: data.id,
@@ -109,19 +112,16 @@ export class SessiondataService {
   getAllContactsFromAPI() {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     return this.http.get(url, {
       headers: this.headers,
     });
   }
 
   createNewContact(contact: Contact) {
+    this.loadingDataScreen();
     this.createContactAPI(contact).subscribe((result: any) => {
       if (result) {
+        this.waitForData = false;
         this.localContacts.push(result);
         this._globalContacts.next(this.localContacts);
       }
@@ -131,26 +131,22 @@ export class SessiondataService {
   createContactAPI(newContact: Contact) {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/create/';
-
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
-
     return this.http.post(url, newContact, options);
   }
 
   deleteContact(contact: Contact) {
+    this.loadingDataScreen();
     this.deleteContactAPI(contact).subscribe((response: any) => {
       if (response) {
+        this.waitForData = false;
         if (response.status == 204) {
           let index = this.localContacts.findIndex(
             (element) => element.id == contact.id
           );
           if (index > -1) this.localContacts.splice(index, 1);
           this._globalContacts.next(this.localContacts);
+          this._contactDeleted.next(true);
         }
       }
     });
@@ -158,18 +154,18 @@ export class SessiondataService {
 
   deleteContactAPI(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
-    return this.http.delete(url, { headers: this.headers, observe: 'response' });
+    return this.http.delete(url, {
+      headers: this.headers,
+      observe: 'response',
+    });
   }
 
   //TASKS
   loadTasks() {
+    this.loadingDataScreen();
     this.getAllTasksFromAPI().subscribe((data: any) => {
       if (data) {
+        this.waitForData = false;
         this.localTasks = data.map((data: any): Task => {
           return {
             id: data.id,
@@ -191,16 +187,13 @@ export class SessiondataService {
   getAllTasksFromAPI() {
     const url = environment.apiUrl + '/api/taskitems/';
     let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     return this.http.get(url, {
       headers: this.headers,
     });
   }
 
   createTask(task: Task, subtasks: Subtask[]) {
+    this.loadingDataScreen();
     this.createTaskAPI(task).subscribe((data: any) => {
       if (data) {
         if (subtasks) {
@@ -209,7 +202,7 @@ export class SessiondataService {
             this.createSubTaskAPI(currentTask.id, subtasks).subscribe(
               (data: any) => {
                 if (data) {
-                  console.log(data);
+                  this.loadTasks();
                 }
               }
             );
@@ -222,12 +215,6 @@ export class SessiondataService {
   createTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/create/';
     console.log(url);
-
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
 
     return this.http.post(url, task, options);
@@ -249,12 +236,10 @@ export class SessiondataService {
 
   deleteTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
-    return this.http.delete(url, { headers: this.headers, observe: 'response' });
+    return this.http.delete(url, {
+      headers: this.headers,
+      observe: 'response',
+    });
   }
 
   editTask(index: number, taskToEdit: Task) {
@@ -268,13 +253,7 @@ export class SessiondataService {
 
   editTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
-
     return this.http.put(url, task, options);
   }
 
@@ -290,12 +269,6 @@ export class SessiondataService {
   editTaskStatusAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/status/';
     console.log(url);
-
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
     const body = { status: task.status };
 
@@ -314,12 +287,6 @@ export class SessiondataService {
   changeSubtaskCheckedAPI(subtask: Subtask) {
     const url =
       environment.apiUrl + '/api/subtasks/' + subtask.id + '/checked/';
-
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
     const body = { checked: subtask.checked };
 
@@ -328,11 +295,6 @@ export class SessiondataService {
 
   createSubTaskAPI(taskID: string, subtask: Subtask[]) {
     const url = environment.apiUrl + '/api/subtasks/create/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
     let body = subtask.map((sub) => {
       return {
@@ -356,11 +318,6 @@ export class SessiondataService {
 
   editContactAPI(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
-    // let headers = new HttpHeaders();
-    // headers = headers.append(
-    //   'Authorization',
-    //   'Token ' + localStorage.getItem('token')
-    // );
     const options = { headers: this.headers };
     return this.http.put(url, contact, options);
   }
@@ -446,13 +403,13 @@ export class SessiondataService {
   }
 
   /**
-   * Show a loading screen for minimum 1s
+   * Show a loading screen for minimum 0,5s
    */
   loadingDataScreen() {
     this.waitForData = true;
     this.showLoadingScreen = true;
     setTimeout(() => {
       this.showLoadingScreen = false;
-    }, 1000);
+    }, 500);
   }
 }

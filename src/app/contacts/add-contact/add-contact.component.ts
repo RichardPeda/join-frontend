@@ -120,6 +120,7 @@ export class AddContactComponent {
       else this.editContact();
 
       ngForm.resetForm();
+      this.closePopup()
     }
   }
 

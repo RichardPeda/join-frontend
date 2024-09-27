@@ -75,7 +75,7 @@
                     Create contact<img src="../../../assets/img/checked.svg"></button>
                 }@else {
                 <button class="btn-white btn-pos"
-                    (click)="sessionService.deleteContact(preparedcontact); sessionService.showOtherContact()">Delete</button>
+                    (click)="sessionService.deleteContact(preparedcontact); sessionService.showOtherContact(); closePopup()">Delete</button>
                 <button [disabled]="contactform.invalid" [ngClass]="{'form-validate': !contactform.invalid}"
                     id="createContactBtn" type="submit" class="btn-grey img-white btn-pos">
                     Save<img src="../../../assets/img/checked.svg"></button>

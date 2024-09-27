@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -10,15 +10,10 @@ import {
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { passwordMatchValidator } from '../shared/passwordValid.directive';
 import { Router, RouterModule } from '@angular/router';
-import { UserdataService } from '../services/userdata.service';
 import { User } from '../interfaces/user.interface';
-import { Guest } from '../shared/models/guestUser.model';
-import { addDoc, collection, query, where } from '@angular/fire/firestore';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
 import { SessiondataService } from '../services/sessiondata.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { environment } from '../../environments/environment.development';
-import { lastValueFrom } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-sign-up',
@@ -50,9 +45,8 @@ export class SignUpComponent {
   notificationText = '';
 
   constructor(
-    private userService: UserdataService,
     private router: Router,
-    private http: HttpClient
+    private sessionDataService: SessiondataService
   ) {
     this.newUserForm = new FormGroup(
       {
@@ -82,59 +76,24 @@ export class SignUpComponent {
     let email = this.newUserForm.get('email')?.value;
     let password = this.newUserForm.get('password_1')?.value;
     try {
-      let resp = await this.registerNewUser(email, password, name);
-      this.router.navigate(['']);
-      
-    } catch (e) {
-      console.error(e)
-    }
-    
-    // if (await this.addNewUser(name, email, password)) {
-    //   this.notificationText = 'You Signed Up successfully';
-    //   this.showNotification = true;
-    //   this.clearForm();
-    //   setTimeout(() => {
-    //     this.router.navigate(['']);
-    //   }, 2500);
-    // } else {
-    //   this.notificationText = 'This email is already registered';
-    //   this.showNotification = true;
-    //   this.clearForm();
-    //   setTimeout(() => {
-    //     this.showNotification = false;
-    //   }, 2500);
-    // }
-  }
-
-  registerNewUser(email: string, password: string, name:string) {
-    const url = environment.apiUrl + '/api/signup/';
-    const body = {
-      email: email,
-      password: password,
-      name: name
-    };
-    return lastValueFrom(this.http.post(url, body));
-  }
-
-  /**
-   * Create new user, use object with existing contacts and tasks for demo.
-   * Apply this user to database.
-   * @param name username
-   * @param email user email address
-   * @param password user password
-   * @returns
-   */
-  async addNewUser(name: string, email: string, password: string) {
-    if (await this.userService.checkIfUserDontExists(name, email)) {
-      let initials = this.getInitials(name);
-      let guest = new Guest(name, email, initials, password);
-      const docRef = await addDoc(
-        this.userService.getUserRef(),
-        guest.toJSON()
+      let resp = await this.sessionDataService.registerNewUserAPI(
+        email,
+        password,
+        name
       );
-      return true;
-    } else {
-      return false;
+      this.notificationText = 'You Signed Up successfully';
+      this.showNotification = true;
+      this.clearForm();
+      setTimeout(() => {
+        this.router.navigate(['']);
+      }, 2500);
+    } catch (e) {
+      this.notificationText = 'This email is already registered';
+      this.showNotification = true;
+      this.clearForm();
+      setTimeout(() => {
+        this.showNotification = false;
+      }, 4500);
     }
   }
 

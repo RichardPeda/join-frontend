@@ -113,23 +113,6 @@ export class ContactsComponent {
       }
     );
 
-    // this._subscriptionUser = this.sessionDataService
-    //   .getUserInfo()
-    //   .subscribe((user: User) => {
-    //     this.localUser = user;
-
-    //     if (this.localUser.contacts) {
-    //       this.sessionDataService.user.contacts.sort(
-    //         this.sessionDataService.compare
-    //       );
-    //       this.getRegisterLetters(this.localUser.contacts);
-    //     }
-    //   });
-
-    // this._subscriptionContact =
-    //   this.sessionDataService._selectedContact.subscribe((contact: Contact) => {
-    //     if (contact) this.selectedContact = contact;
-    //   });
     this._subscriptionDeleted =
       this.sessionDataService._contactDeleted.subscribe(
         (isDeleted: boolean) => {
