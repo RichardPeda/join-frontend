@@ -2,7 +2,6 @@ import { Component, HostListener, inject } from '@angular/core';
 import { NavbarComponent } from '../shared/modules/navbar/navbar.component';
 import { HeaderComponent } from '../shared/modules/header/header.component';
 import { CommonModule } from '@angular/common';
-import { UserdataService } from '../services/userdata.service';
 import { User } from '../interfaces/user.interface';
 import { SessiondataService } from '../services/sessiondata.service';
 import { Task } from '../interfaces/task.interface';
@@ -79,16 +78,14 @@ export class SummaryComponent {
 
   sessionDataService = inject(SessiondataService);
 
-  constructor(private userService: UserdataService, private router: Router) {
-    // this.docId = this.userService.loadIdFromSessionStorage()!;
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.sessionDataService.loadTasks();
     this._subscriptionTask = this.sessionDataService._globalTasks.subscribe(
       (data: any) => {
         if (data) this.localTasks = data;
-   
+
         this.nrOfTasks.forEach((element) => {
           element.amount = this.countTasksOfStatus(element.status);
         });

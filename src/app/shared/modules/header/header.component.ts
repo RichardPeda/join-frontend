@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserdataService } from '../../../services/userdata.service';
 import { ClickOutsideMenuDirective } from '../../click-outside-menu.directive';
 import { CommonModule } from '@angular/common';
 import { SessiondataService } from '../../../services/sessiondata.service';
@@ -29,22 +28,14 @@ export class HeaderComponent {
     tasks: [],
   };
   constructor(
-    private userService: UserdataService,
     private router: Router,
     private sessionDataService: SessiondataService
   ) {
-    this.docId = this.userService.loadIdFromSessionStorage();
   }
 
   ngOnInit(){
     let name = localStorage.getItem('username')
     if (name)  this.localUser.userinitials = this.sessionDataService.getInitials(name)
-    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-    //   (user: User) => {
-    //     this.localUser = user;
-
-    //   }
-    // );
   }
 
   ngOnDestroy() {
@@ -67,7 +58,6 @@ export class HeaderComponent {
 
   logOut() {
     this.linkToStartPage();
-    this.userService.deleteDataInSessionStorage('userId');
     location.replace("/");
   }
 

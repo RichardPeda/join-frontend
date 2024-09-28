@@ -13,7 +13,6 @@ import { HeaderComponent } from '../shared/modules/header/header.component';
 import { NavbarComponent } from '../shared/modules/navbar/navbar.component';
 import { AddContactComponent } from './add-contact/add-contact.component';
 import { ContactsService } from '../services/contacts.service';
-import { UserdataService } from '../services/userdata.service';
 import { SessiondataService } from '../services/sessiondata.service';
 import { ActivatedRoute } from '@angular/router';
 import { User } from '../interfaces/user.interface';
@@ -38,47 +37,14 @@ import { LoadingScreenComponent } from '../shared/modules/loading-screen/loading
   styleUrl: './contacts.component.scss',
 })
 export class ContactsComponent {
-  _subscriptionUser: any;
   _subscriptionContact: any;
   _subscriptionDeleted: any;
   _subscripeContacts: any;
   $usercontact: any;
   registerLetters: string[] = [];
   localContacts: Contact[] = [];
-  // localUser: User = {
-  //   id: '',
-  //   name: '',
-  //   userinitials: '',
-  //   email: '',
-  //   password: '',
-  //   contacts: [
-  //     {
-  //       badgecolor: '',
-  //       email: '',
-  //       id: '',
-  //       initials: '',
-  //       name: '',
-  //       phone: '',
-  //       register: '',
-  //       selected: false,
-  //     },
-  //   ],
-  //   tasks: [],
-  // };
-
   showNotification = false;
   notificationText = 'Contact succesfully created';
-
-  selectedContact: Contact = {
-    id: '3',
-    badge_color: '#FFA35E',
-    initials: 'AF',
-    register: 'A',
-    name: 'Arne Fröhlich',
-    email: 'fröhlich@24-7.com',
-    phone: '+49 815 79183212',
-    selected: false,
-  };
 
   innerWidth = 0;
   mobileMode = false;
@@ -87,13 +53,10 @@ export class ContactsComponent {
   constructor(
     private _renderer: Renderer2,
     public contactService: ContactsService,
-    public userService: UserdataService,
     public sessionDataService: SessiondataService,
     public activatedroute: ActivatedRoute,
     private ref: ChangeDetectorRef
-  ) {
-    // this.sessionDataService.user.contacts.sort(this.sessionDataService.compare);
-  }
+  ) {}
 
   ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
@@ -122,7 +85,6 @@ export class ContactsComponent {
   }
 
   ngOnDestroy() {
-    // this._subscriptionUser.unsubscribe();
     this._subscripeContacts.unsubscribe();
     this._subscriptionDeleted.unsubscribe();
   }
@@ -131,8 +93,6 @@ export class ContactsComponent {
   onWindowResize() {
     this.checkMobile();
   }
-
- 
 
   editContact(contact: Contact) {
     this.sessionDataService.editContactAPI(contact).subscribe((result: any) => {
@@ -184,9 +144,5 @@ export class ContactsComponent {
       }
     });
     this.registerLetters.sort();
-  }
-
-  selectCurrentContact(contact: Contact) {
-    this.selectedContact = contact;
   }
 }

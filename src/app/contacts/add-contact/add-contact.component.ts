@@ -90,9 +90,7 @@ export class AddContactComponent {
     }
   }
 
-  ngOnInit() {
-    console.log(this.contact);
-  }
+  ngOnInit() {}
 
   createTimeout() {
     this.timeout = true;
@@ -120,7 +118,7 @@ export class AddContactComponent {
       else this.editContact();
 
       ngForm.resetForm();
-      this.closePopup()
+      this.closePopup();
     }
   }
 
@@ -128,24 +126,7 @@ export class AddContactComponent {
    * Edit the selected contact (contactID found). Emit to update, reset the form and close popup.
    */
   editContact() {
-    // let newContacts: Contact[] = this.sessionService.user.contacts;
-
-    // newContacts.forEach((contact, index) => {
-    //   if (contact.contactID === this.preparedcontact.contactID) {
-    //     let updatecontact: Contact = {
-    //       contactID: contact.contactID,
-    //       name: this.preparedcontact.name,
-    //       email: this.preparedcontact.email,
-    //       badge_color: contact.badge_color,
-    //       phone: this.preparedcontact.phone,
-    //       initials: this.sessionService.getInitials(this.preparedcontact.name),
-    //       register: this.sessionService
-    //         .getInitials(this.preparedcontact.name)
-    //         .charAt(0),
-    //       selected: false,
-    //     };
     let updatecontact: Contact = {
-      // contactID: contact.contactID,
       name: this.preparedcontact.name,
       email: this.preparedcontact.email,
       badge_color: this.preparedcontact.badge_color,
@@ -156,12 +137,7 @@ export class AddContactComponent {
         .charAt(0),
       selected: false,
     };
-    this.editExistingContact.emit(this.preparedcontact)
-    // newContacts.splice(index, 1, updatecontact);
-    // this.sessionService.editContact(this.preparedcontact);
-    // this.sessionService.setContact(newContacts);
-    // this.sessionService.showContactDetails(updatecontact);
-
+    this.editExistingContact.emit(this.preparedcontact);
     this.closePopup();
   }
 
@@ -181,20 +157,5 @@ export class AddContactComponent {
       selected: false,
     };
     this.createContact.emit(contact);
-
-    // this.sessionService.createContact(contact).subscribe(result => {
-    //   console.log(result);
-    //   if (result){
-
-    //   }
-    // })
-
-    // let newContacts: Contact[] = this.sessionService.user.contacts;
-    // newContacts.push(contact);
-
-    // await this.sessionService.setContact(newContacts);
-    // this.sessionService.showContactDetails(contact)
-    // this.showNotification.emit('Contact succesfully created');
-    // this.closePopup();
   }
 }

@@ -24,7 +24,6 @@ export class ProgressBarComponent {
   progress: number = 0;
 
   ngOnChanges(changes :SimpleChanges) {
-       
     this.calcSubtasks();
   }
   ngOnInit() {

@@ -1,5 +1,5 @@
-import { CommonModule, Location } from '@angular/common';
-import { Component, HostListener, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, HostListener } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -8,9 +8,7 @@ import {
 } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { LogoAnimationComponent } from '../logo-animation/logo-animation.component';
-import { UserdataService } from '../services/userdata.service';
 import { RouterModule, Router } from '@angular/router';
-import { Guest } from '../shared/models/guestUser.model';
 import { LogoAnimationMobileComponent } from '../logo-animation-mobile/logo-animation-mobile.component';
 import { PopupNotificationComponent } from '../shared/modules/popup-notification/popup-notification.component';
 import { environment } from '../../environments/environment.development';
@@ -46,17 +44,15 @@ export class LoginComponent {
   notificationText = '';
 
   constructor(
-    public userService: UserdataService,
-    private sessionDataService : SessiondataService,
+    private sessionDataService: SessiondataService,
     private router: Router,
-    private location: Location,
     private http: HttpClient
   ) {
     this.userform = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
     });
-    this.sessionDataService.clearGuestUser()
+    this.sessionDataService.clearGuestUser();
   }
 
   ngOnInit() {
@@ -90,7 +86,7 @@ export class LoginComponent {
   }
 
   /**
-   * When form field is submitted, a database query check the user and get the docId.
+   * When form field is submitted, a database query check the user and get the token.
    * Route to summary page
    */
   async onSubmit() {
@@ -99,7 +95,7 @@ export class LoginComponent {
     this.loginWithEmailAndPassword(email, password).then(
       (data) => {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.name)
+        localStorage.setItem('username', data.name);
         this.router.navigate(['summary']);
         this.rememberMe(email, password);
       },
@@ -111,9 +107,7 @@ export class LoginComponent {
     );
     try {
     } catch (e) {
-      console.error(e);
     }
-
   }
   loginWithEmailAndPassword(email: string, password: string) {
     const url = environment.apiUrl + '/api/login/';
@@ -147,24 +141,20 @@ export class LoginComponent {
    * Login as guest user. Creates a new instance in database and redirect to summary.
    */
   async addNewGuestUser() {
-    // let guest = new Guest('guest3164641646', 'demo@mail.com', 'G', '123456');
-    let name = 'guest'
-    let email = 'demo123456@mail.com'
-    let password = '123456'
-    // guest.userinitials = 'G';
+    let name = 'guest';
+    let email = 'demo123456@mail.com';
+    let password = '123456';
     try {
       let resp = await this.sessionDataService.registerNewUserAPI(
         email,
         password,
         name
       );
-      if (resp){
-        console.log(resp);
-        
+      if (resp) {
         this.loginWithEmailAndPassword(email, password).then(
           (data) => {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('username', data.name)
+            localStorage.setItem('username', data.name);
             this.router.navigate(['summary']);
             this.rememberMe(email, password);
           },
@@ -174,21 +164,8 @@ export class LoginComponent {
             }
           }
         );
-      };
-      
-     
-    } catch (e) {
-    
-    }
-   
-    // const docRef = await addDoc(
-    //   this.userService.getUserRef(),
-    //   guest.toJSON()
-    // ).then((docInfo) => {
-    //   this.router.navigate(['summary/' + docInfo.id]);
-    //   this.userService.saveIdInSessionStorage(docInfo.id);
-    //   this.userService.saveDataInSessionStorage('name', 'guest');
-    // });
+      }
+    } catch (e) {}
   }
 
   @HostListener('window:resize', ['$event'])

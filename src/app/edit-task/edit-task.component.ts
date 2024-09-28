@@ -45,8 +45,6 @@ export class EditTaskComponent {
     status: 'toDo',
     related_task: [],
   };
-
-  _subscriptionUser: any;
   _subscripeContacts: any;
   submitBtnClicked = false;
   localContacts: Contact[] = [];
@@ -71,8 +69,6 @@ export class EditTaskComponent {
     public dialogRef: MatDialogRef<EditTaskComponent>
   ) {
     this.localTask = { ...data };
-
-    // this.localUser = this.sessionDataService.user;
     if (this.localTask.contacts)
       this.filteredContacts = this.localTask.contacts;
   }
@@ -122,7 +118,7 @@ export class EditTaskComponent {
   }
 
   ngOnDestroy() {
-    // this._subscriptionUser.unsubscribe();
+    this._subscripeContacts.unsubscribe();
   }
 
   /**

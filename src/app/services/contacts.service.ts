@@ -1,6 +1,5 @@
 import { Injectable, OnChanges, inject } from '@angular/core';
 import { Contact } from '../interfaces/contact.interface';
-import { UserdataService } from './userdata.service';
 import { SessiondataService } from './sessiondata.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 

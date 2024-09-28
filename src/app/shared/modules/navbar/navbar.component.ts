@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { UserdataService } from '../../../services/userdata.service';
 import { CommonModule, Location } from '@angular/common';
 import { SessiondataService } from '../../../services/sessiondata.service';
 
@@ -16,11 +15,9 @@ export class NavbarComponent {
   selectedPageName = 'summary';
 
   constructor(
-    private userService: UserdataService,
     private router: Router,
     private location: Location,
   ) {
-    this.docId = this.userService.loadIdFromSessionStorage()!;
   }
 
   ngOnInit() {

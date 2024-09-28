@@ -28,7 +28,6 @@ import { Task } from '../../interfaces/task.interface';
 import { HeaderComponent } from '../../shared/modules/header/header.component';
 import { NavbarComponent } from '../../shared/modules/navbar/navbar.component';
 import { TaskAddedSnackbarComponent } from '../../snackbars/task-added-snackbar/task-added-snackbar.component';
-import { UserdataService } from '../../services/userdata.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PopupNotificationComponent } from '../../shared/modules/popup-notification/popup-notification.component';
@@ -55,17 +54,8 @@ import { PopupNotificationComponent } from '../../shared/modules/popup-notificat
   encapsulation: ViewEncapsulation.None,
 })
 export class AddTaskComponent {
-  _subscriptionUser: any;
+  _subscriber: any;
   submitBtnClicked = false;
-  // localUser: User = {
-  //   id: '',
-  //   name: '',
-  //   userinitials: '',
-  //   email: '',
-  //   password: '',
-  //   contacts: [],
-  //   tasks: [],
-  // };
 
   localContacts: Contact[] = [];
   status: 'toDo' | 'inProgress' | 'awaitFeedback' | 'done' = 'toDo';
@@ -96,46 +86,27 @@ export class AddTaskComponent {
   priority: 'medium' | 'urgent' | 'low' = 'medium';
   docId = '';
   constructor(
-    private userService: UserdataService,
     private router: Router,
-    private route: ActivatedRoute,
     private _formbuilder: FormBuilder,
     private sessionDataService: SessiondataService,
     @Optional() public dialogRef: MatDialogRef<AddTaskComponent>
-  ) {
-    // this.docId = this.userService.loadIdFromSessionStorage()!;
-    // this.localUser = this.sessionDataService.user;
-    // this.filteredContacts = this.localUser.contacts;
-  }
+  ) {}
 
   ngOnInit() {
-    // this._subscriptionUser = this.sessionDataService.userSubject.subscribe(
-    //   (user: User) => {
-    //     this.localUser = user;
-    //     this.filteredContacts = this.localUser.contacts;
-    //   }
-    // );
-
-    this.sessionDataService._globalContacts.subscribe((data: any) => {
-      if (data) {
-        console.log('data from _globalcontacts', data);
-      }
-    });
-
-    this.sessionDataService.getAllContactsFromAPI().subscribe((data: any) => {
+    this._subscriber = this.sessionDataService._globalContacts.subscribe((data: any) => {
       if (data) {
         this.localContacts = data;
         this.filteredContacts = data;
-        console.log(data);
       }
     });
+
     this.status = this.sessionDataService.reqTaskStatus;
     this.taskForm.controls['subtask'].disable();
     this.getCurrentDate();
   }
 
   ngOnDestroy() {
-    // this._subscriptionUser.unsubscribe();
+    this._subscriber.unsubscribe();
   }
 
   getCurrentDate() {
@@ -182,19 +153,15 @@ export class AddTaskComponent {
       ) {
         let task: Task = {
           title: this.taskForm.controls['title'].value!,
-          // taskID: Math.floor(100000 + Math.random() * 900000).toString(),
           description: this.taskForm.controls['description'].value!,
           contacts: this.selectedContacts,
           priority: this.priority,
           category: this.taskForm.controls['category'].value!,
           due_date: this.taskForm.controls['date'].value!,
           status: this.status,
-          related_task: [], //this.subTasks,
+          related_task: [],
         };
-        // newTasks.push(task);
         this.sessionDataService.reqTaskStatus = 'toDo';
-        console.log('create Task');
-
         this.sessionDataService.createTask(task, this.subTasks);
 
         this.resetForm();

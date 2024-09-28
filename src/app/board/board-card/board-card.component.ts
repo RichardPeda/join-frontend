@@ -6,7 +6,6 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { Task } from '../../interfaces/task.interface';
-import { Contact } from '../../interfaces/contact.interface';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { PriorityBadgeComponent } from '../priority-badge/priority-badge.component';
 import { CommonModule } from '@angular/common';
@@ -29,7 +28,6 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
 })
 export class BoardCardComponent {
   @Input() task: Task = {
-    // taskID: '',
     title: '',
     description: '',
     contacts: [],

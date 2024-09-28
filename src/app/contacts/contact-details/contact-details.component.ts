@@ -36,19 +36,14 @@ export class ContactDetailsComponent {
     public sessionService: SessiondataService,
     private ref: ChangeDetectorRef
   ) {
-   
     this._subscriptionContact = this.sessionService._selectedContact.subscribe(
       (contact: Contact) => {
         if (contact) this.detailcontact = contact;
-      
       }
     );
   }
 
-  ngOnInit() {
-   
-   
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this._subscriptionContact.unsubscribe();
@@ -78,13 +73,4 @@ export class ContactDetailsComponent {
   closeDialog() {
     if (this.showDialog && !this.cooldown) this.showDialog = false;
   }
-
-  
-
-  /**
-   * Select the first contact of the list to fill the details component.
-   */
-  // getFirstContact() {
-  //   this.sessionService.getFirstContact();
-  // }
 }

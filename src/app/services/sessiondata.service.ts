@@ -1,6 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { UserdataService } from './userdata.service';
-import { User } from '../interfaces/user.interface';
 import { Contact } from '../interfaces/contact.interface';
 import { BehaviorSubject, lastValueFrom, Subject } from 'rxjs';
 import { Task } from '../interfaces/task.interface';
@@ -53,15 +51,18 @@ export class SessiondataService {
 
   headers = new HttpHeaders();
 
-  constructor(private userService: UserdataService, private http: HttpClient) {
+  constructor(private http: HttpClient) {
     this.headers = this.headers.append(
       'Authorization',
       'Token ' + localStorage.getItem('token')
     );
-    console.log(this.headers);
   }
 
-  //CLEAR GUEST
+  //GUEST
+  /**
+   * This function deletes the guest user in the database
+   * @returns http response of guest user
+   */
   clearGuestUser() {
     let name = 'guest';
     let email = 'demo123456@mail.com';
@@ -76,6 +77,13 @@ export class SessiondataService {
   }
 
   //REGISTER
+  /**
+   * This function send a request to the api and registers a new user
+   * @param email user email
+   * @param password user password
+   * @param name username
+   * @returns http response
+   */
   registerNewUserAPI(email: string, password: string, name: string) {
     const url = environment.apiUrl + '/api/signup/';
     const body = {
@@ -87,6 +95,9 @@ export class SessiondataService {
   }
 
   //CONTACTS
+  /**
+   * This function loads all contacts from the api and give the rusult to the subscriber
+   */
   loadContacts() {
     this.loadingDataScreen();
     this.getAllContactsFromAPI().subscribe((data: any) => {
@@ -109,6 +120,10 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This functions sends a request to the api to get all contacts
+   * @returns http response all contacts
+   */
   getAllContactsFromAPI() {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/';
@@ -117,6 +132,10 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function creates a new contact in the database and save the result in the subscriber
+   * @param contact new contact
+   */
   createNewContact(contact: Contact) {
     this.loadingDataScreen();
     this.createContactAPI(contact).subscribe((result: any) => {
@@ -128,6 +147,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function send a request to the api to create a new contact
+   * @param newContact contact to create in the database
+   * @returns http response and status of the created contact
+   */
   createContactAPI(newContact: Contact) {
     this.loadingDataScreen();
     const url = environment.apiUrl + '/api/contacts/create/';
@@ -135,6 +159,10 @@ export class SessiondataService {
     return this.http.post(url, newContact, options);
   }
 
+  /**
+   * This function deletes a contact in the database and save the result in the subscriber
+   * @param contact contact to delete
+   */
   deleteContact(contact: Contact) {
     this.loadingDataScreen();
     this.deleteContactAPI(contact).subscribe((response: any) => {
@@ -152,6 +180,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function send the request to the api to delete the contact in the database
+   * @param contact contact to delete
+   * @returns http response and status
+   */
   deleteContactAPI(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
     return this.http.delete(url, {
@@ -161,6 +194,9 @@ export class SessiondataService {
   }
 
   //TASKS
+  /**
+   * This function loads all tasks from the api and save them in the subscriber
+   */
   loadTasks() {
     this.loadingDataScreen();
     this.getAllTasksFromAPI().subscribe((data: any) => {
@@ -184,6 +220,10 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function sends the request to the api to get all tasks
+   * @returns http response all tasks
+   */
   getAllTasksFromAPI() {
     const url = environment.apiUrl + '/api/taskitems/';
     let headers = new HttpHeaders();
@@ -192,6 +232,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function creates a new task and subtask in the database and reloads all tasks
+   * @param task new task to create
+   * @param subtasks new substask to create if existing
+   */
   createTask(task: Task, subtasks: Subtask[]) {
     this.loadingDataScreen();
     this.createTaskAPI(task).subscribe((data: any) => {
@@ -212,14 +257,22 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function sends the request to the api to create a new task
+   * @param task new task to create
+   * @returns http resonse and status of the new task
+   */
   createTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/create/';
-    console.log(url);
     const options = { headers: this.headers };
 
     return this.http.post(url, task, options);
   }
 
+  /**
+   * This function deletes a given task in the database and removes it from subscriber
+   * @param task task to be deleted
+   */
   deleteTask(task: Task) {
     this.deleteTaskAPI(task).subscribe((response: any) => {
       if (response) {
@@ -234,6 +287,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function sends a request to the api to delete a task
+   * @param task task to delete
+   * @returns http status
+   */
   deleteTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
     return this.http.delete(url, {
@@ -242,6 +300,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function edits a existing task
+   * @param index index of the task to change
+   * @param taskToEdit new customized task
+   */
   editTask(index: number, taskToEdit: Task) {
     this.editTaskAPI(taskToEdit).subscribe((data: any) => {
       if (data) {
@@ -251,12 +314,22 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function sends a request to the api to update a task
+   * @param task task to update
+   * @returns http response of task and status
+   */
   editTaskAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/';
     const options = { headers: this.headers };
     return this.http.put(url, task, options);
   }
 
+  /**
+   * This function change the status of a task when moved to another column in the board and save the result in the subscriber
+   * @param index index of task
+   * @param task customized task
+   */
   updateTaskStatus(index: number, task: Task) {
     this.editTaskStatusAPI(task).subscribe((data: any) => {
       if (data) {
@@ -266,9 +339,13 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This function sends a request to the api to change the status of the task
+   * @param task taks to update
+   * @returns http resonse of task
+   */
   editTaskStatusAPI(task: Task) {
     const url = environment.apiUrl + '/api/taskitems/' + task.id + '/status/';
-    console.log(url);
     const options = { headers: this.headers };
     const body = { status: task.status };
 
@@ -276,6 +353,11 @@ export class SessiondataService {
   }
 
   //SUBTASKS
+  /**
+   * This function change the status of the subtask and save the result to the subscriber
+   * @param id id of the subtask
+   * @param subtask subtask to update
+   */
   changeSubtaskChecked(id: string, subtask: Subtask) {
     this.changeSubtaskCheckedAPI(subtask).subscribe((data: any) => {
       if (data) {
@@ -284,6 +366,11 @@ export class SessiondataService {
     });
   }
 
+  /**
+   * This fuction sends the request to the api to update the subtask checked status
+   * @param subtask subtask to update
+   * @returns http response of subtask
+   */
   changeSubtaskCheckedAPI(subtask: Subtask) {
     const url =
       environment.apiUrl + '/api/subtasks/' + subtask.id + '/checked/';
@@ -293,6 +380,12 @@ export class SessiondataService {
     return this.http.put(url, body, options);
   }
 
+  /**
+   * This function sends the request to the api to create a new subtask
+   * @param taskID related task id
+   * @param subtask new subtask
+   * @returns http response and status
+   */
   createSubTaskAPI(taskID: string, subtask: Subtask[]) {
     const url = environment.apiUrl + '/api/subtasks/create/';
     const options = { headers: this.headers };
@@ -302,20 +395,14 @@ export class SessiondataService {
         rel_task: taskID,
       };
     });
-    console.log(body);
     return this.http.post(url, body, options);
   }
 
-  getUserInfo() {
-    return this.userSubject.asObservable();
-  }
-
-  ngOnInit() {}
-
-  ngOnDestroy() {
-    this.unsubUser();
-  }
-
+  /**
+   * This function sends the request to the api to update a contact
+   * @param contact customized contact
+   * @returns http response of contact
+   */
   editContactAPI(contact: Contact) {
     const url = environment.apiUrl + '/api/contacts/' + contact.id + '/';
     const options = { headers: this.headers };
@@ -323,12 +410,10 @@ export class SessiondataService {
   }
 
   /**
-   *
-   * @param task related task for subtask
-   * @param subtask subtask itself
-   * @returns Observable
+   * This function get the initials of the username and returns them
+   * @param name username
+   * @returns initials
    */
-
   getInitials(name: string) {
     let splitName = name.split(' ', 2);
 

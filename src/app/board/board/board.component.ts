@@ -3,7 +3,6 @@ import { HeaderComponent } from '../../shared/modules/header/header.component';
 import { NavbarComponent } from '../../shared/modules/navbar/navbar.component';
 import { BoardCardComponent } from '../board-card/board-card.component';
 import { User } from '../../interfaces/user.interface';
-import { UserdataService } from '../../services/userdata.service';
 import { SessiondataService } from '../../services/sessiondata.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DialogDetailCardComponent } from '../dialog-detail-card/dialog-detail-card.component';
@@ -84,17 +83,13 @@ export class BoardComponent {
   filteredTasks: string[] = [];
 
   constructor(
-    public userService: UserdataService,
     public sessionDataService: SessiondataService,
     private _renderer: Renderer2,
     private dialog: MatDialog,
     private router: Router
-  ) {
-    // this.localUser = this.sessionDataService.user;
-    this.docId = this.userService.loadIdFromSessionStorage()!;
-  }
+  ) {}
 
-  changes = false
+  changes = false;
 
   async ngOnInit() {
     this._renderer.setStyle(document.body, 'overflow-x', 'hidden');
@@ -115,13 +110,7 @@ export class BoardComponent {
    * Unsubscribe the Observables
    */
   ngOnDestroy() {
-    // this._subscriptionUser.unsubscribe();
-    // if (this._subscriptionDialog) {
-    //   this._subscriptionDialog.unsubscribe();
-    // }
-    // if (this._subscriptionEditDialog) {
-    //   this._subscriptionEditDialog.unsubscribe();
-    // }
+    this._subscripeTasks.unsubscribe();
   }
 
   /**
@@ -131,9 +120,7 @@ export class BoardComponent {
    */
   openDetailDialog(event: MouseEvent, index: number) {
     event.preventDefault();
-    let oldData = this.localTasks[index].related_task.map(x => x) 
-    console.log(oldData);
-    
+
     const dialogRef = this.dialog.open(DialogDetailCardComponent, {
       minWidth: 'min(400px, 100%)',
       maxHeight: '100%',
@@ -144,16 +131,11 @@ export class BoardComponent {
       if (result && result.event == 'editmode') {
         this.openEditDialog(index);
       } else if (result && result.event == 'delete') {
-        console.log(index);
         this.sessionDataService.deleteTask(this.localTasks[index]);
       } else if (result && result.event == 'update') {
-        console.log(result.event);
       }
-      if(!result){
-        
+      if (!result) {
       }
-    
-      
     });
   }
 
@@ -324,18 +306,6 @@ export class BoardComponent {
     this.sessionDataService.reqTaskStatus = status;
     this.router.navigate(['addtask/' + this.docId]);
   }
-
-  /**
-   * Save the updated tasks in the database
-   */
-
-  // updateTaskStatus(task: Task) {
-  //   this.sessionDataService.editTaskStatus(task).subscribe((data: any) => {
-  //     if (data) {
-  //       this.sessionDataService._globalTasks.next(this.localTasks);
-  //     }
-  //   });
-  // }
 
   /**
    * Filter the tasks when the input field is filled. If a task title or description is found, push the taskId to an array.
